@@ -37,6 +37,8 @@
   :group 'org)
 
 (defun orgtd-todo-p ()
+  "Predicate determining if headling at point is a todo item.
+Every headline with a valid todo keyword is considered a todo item."
   (and (org-at-heading-p)
        (org-get-todo-state)))
 
