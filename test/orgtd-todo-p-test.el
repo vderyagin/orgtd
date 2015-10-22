@@ -1,5 +1,3 @@
-(require 'orgtd)
-
 (ert-deftest handles-todos ()
   (with-org "* TODO foobar"
     (should (orgtd-todo-p))))
