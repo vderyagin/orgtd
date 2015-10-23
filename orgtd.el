@@ -56,6 +56,13 @@ Heading itself is excluded from search."
                     do (outline-next-heading))))))
 
 ;;;###autoload
+(defun orgtd-contained-in-todo-p ()
+  "Predicate determining if heading at point is contained within a heading with a todo keyword."
+  (and (org-at-heading-p)
+       (cl-loop while (org-up-heading-safe)
+                thereis (orgtd-todo-p))))
+
+;;;###autoload
 (defun orgtd-task-p ()
   "Predicate determining if heading at point is a task.
 Task is a todo item (fulfilling `orgtd-todo-p' predicate) that
