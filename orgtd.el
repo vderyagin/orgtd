@@ -38,7 +38,7 @@
 
 ;;;###autoload
 (defun orgtd-todo-p ()
-  "Predicate determining if headling at point is a todo item.
+  "Predicate determining if heading at point is a todo item.
 Every headline with a valid todo keyword is considered a todo item."
   (and (org-at-heading-p)
        (org-get-todo-state)))
@@ -54,6 +54,14 @@ Heading itself is excluded from search."
                     while (< (point) subtree-end)
                     thereis (orgtd-todo-p)
                     do (outline-next-heading))))))
+
+;;;###autoload
+(defun orgtd-task-p ()
+  "Predicate determining if heading at point is a task.
+Task is a todo item (fulfilling `orgtd-todo-p' predicate) that
+does contain any other todo items."
+  (and (orgtd-todo-p)
+       (not (orgtd-contains-todo-p))))
 
 (provide 'orgtd)
 
