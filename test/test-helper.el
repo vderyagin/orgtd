@@ -6,4 +6,5 @@
      (org-mode)
      (insert ,text)
      (goto-char (point-min))
+     (search-forward "<POINT>" nil t)
      ,@body))
