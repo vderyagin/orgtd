@@ -43,12 +43,15 @@ Every headline with a valid todo keyword is considered a todo item."
        (org-get-todo-state)))
 
 (defun orgtd-contains-todo-p ()
-  (let ((subtree-end (save-excursion (org-end-of-subtree 'invisible-ok))))
-    (save-excursion
-      (cl-loop initially do (outline-next-heading)
-               while (< (point) subtree-end)
-               thereis (orgtd-todo-p)
-               do (outline-next-heading)))))
+  "Predicate determining if subtree of heading at point contains a todo item.
+Heading itself is excluded from search."
+  (and (org-at-heading-p)
+       (let ((subtree-end (save-excursion (org-end-of-subtree 'invisible-ok))))
+         (save-excursion
+           (cl-loop initially do (outline-next-heading)
+                    while (< (point) subtree-end)
+                    thereis (orgtd-todo-p)
+                    do (outline-next-heading))))))
 
 (provide 'orgtd)
 

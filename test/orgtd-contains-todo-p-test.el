@@ -2,9 +2,13 @@
   (with-org "* heading"
     (should-not (orgtd-contains-todo-p))))
 
-(ert-deftest ignores-todo-keyword-on-headline-itself ()
+(ert-deftest ignores-todo-keyword-on-heading-itself ()
   (with-org "* TODO heading"
     (should-not (orgtd-contains-todo-p) )))
+
+(ert-deftest gracefully-handles-invocation-outside-of-headings ()
+  (with-org "some text"
+    (should-not (orgtd-contains-todo-p))))
 
 (ert-deftest handles-headings-containing-a-todo-item ()
   (with-org "* heading
