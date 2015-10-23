@@ -36,12 +36,14 @@
   "Org functions facilitating GTD"
   :group 'org)
 
+;;;###autoload
 (defun orgtd-todo-p ()
   "Predicate determining if headling at point is a todo item.
 Every headline with a valid todo keyword is considered a todo item."
   (and (org-at-heading-p)
        (org-get-todo-state)))
 
+;;;###autoload
 (defun orgtd-contains-todo-p ()
   "Predicate determining if subtree of heading at point contains a todo item.
 Heading itself is excluded from search."
