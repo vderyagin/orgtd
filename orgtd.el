@@ -71,6 +71,16 @@ does not contain any other todo items."
   (and (orgtd-todo-p)
        (not (orgtd-contains-todo-p))))
 
+;;;###autoload
+(defun orgtd-project-p ()
+  "Predicate determining if heading at point is a root of a project.
+Project is a todo item (fulfilling `orgtd-todo-p' predicate) that
+contains other todo items and is not itself contained in higher
+level todo item."
+  (and (orgtd-todo-p)
+       (not (orgtd-contained-in-todo-p))
+       (orgtd-contains-todo-p)))
+
 (provide 'orgtd)
 
 ;;; orgtd.el ends here
