@@ -91,6 +91,18 @@ higher level todo item."
        (orgtd-contained-in-todo-p)
        (orgtd-contains-todo-p)))
 
+;;;###autoload
+(defun orgtd-contains-next-p ()
+  "Predicate determining if heading at point contains a next item.
+Next item is a heading with NEXT todo keyword."
+  (and (org-at-heading-p)
+       (let ((subtree-end (save-excursion (org-end-of-subtree 'invisible-ok))))
+         (save-excursion
+           (cl-loop initially do (outline-next-heading)
+                    while (< (point) subtree-end)
+                    thereis (looking-at "^\*\*+ NEXT ")
+                    do (outline-next-heading))))))
+
 (provide 'orgtd)
 
 ;;; orgtd.el ends here
