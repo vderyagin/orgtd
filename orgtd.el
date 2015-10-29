@@ -67,7 +67,7 @@ Heading itself is excluded from search."
 (defun orgtd-task-p ()
   "Predicate determining if heading at point is a task.
 Task is a todo item (fulfilling `orgtd-todo-p' predicate) that
-does contain any other todo items."
+does not contain any other todo items."
   (and (orgtd-todo-p)
        (not (orgtd-contains-todo-p))))
 
