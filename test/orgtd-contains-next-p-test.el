@@ -1,4 +1,4 @@
-(ert-deftest rejects-plain-headings ()
+(ert-deftest rejects-headings-withoug-todo-keywords ()
   (with-org "* plain heading"
     (should-not (orgtd-contains-next-p))))
 

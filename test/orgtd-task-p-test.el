@@ -2,7 +2,7 @@
   (with-org "* TODO do a thing"
     (should (orgtd-task-p))))
 
-(ert-deftest rejects-plain-headings ()
+(ert-deftest rejects-plain-non-task-headings ()
   (with-org "* do a thing"
     (should-not (orgtd-task-p))))
 

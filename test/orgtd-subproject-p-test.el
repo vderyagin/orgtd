@@ -3,7 +3,7 @@
 ** TODO project task"
     (should-not (orgtd-subproject-p))))
 
-(ert-deftest rejects-plain-headings ()
+(ert-deftest rejects-non-subproject-headings ()
   (with-org "* plain heading"
     (should-not (orgtd-subproject-p))))
 

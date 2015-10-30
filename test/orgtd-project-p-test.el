@@ -1,4 +1,4 @@
-(ert-deftest rejects-plain-headings ()
+(ert-deftest rejects-non-project-headings ()
   (with-org "* plain heading"
     (should-not (orgtd-project-p))))
 
