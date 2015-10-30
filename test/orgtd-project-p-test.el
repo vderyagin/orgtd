@@ -9,7 +9,7 @@
 (ert-deftest accepts-todo-item-with-immediately-nested-todo-item ()
   (with-org "* TODO project
 ** TODO task"
-      (should (orgtd-project-p))))
+    (should (orgtd-project-p))))
 
 (ert-deftest accepts-todo-item-with-deeply-nested-todo-item ()
   (with-org "* TODO foo

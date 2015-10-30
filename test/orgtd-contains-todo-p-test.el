@@ -21,7 +21,7 @@
 *** level 3
 **** level 4
 ***** TODO level 5"
-   (should (orgtd-contains-todo-p))))
+    (should (orgtd-contains-todo-p))))
 
 (ert-deftest limits-itself-to-tree-at-point ()
   (with-org "* heading a
