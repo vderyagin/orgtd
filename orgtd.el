@@ -108,7 +108,7 @@ Next item is a heading with NEXT todo keyword."
   "Return marker pointing to heading of project cointaining position at point.
 Return nil if position at point is not under any project."
   (save-excursion
-    (cl-loop initially (unless (zerop (org-outline-level)) (org-back-to-heading))
+    (cl-loop initially (unless (zerop (org-outline-level)) (org-back-to-heading t))
              if (orgtd-project-p)
              return (point-marker)
              unless (org-up-heading-safe) return nil)))
