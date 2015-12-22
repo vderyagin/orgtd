@@ -109,9 +109,48 @@ Next item is a heading with NEXT todo keyword."
 Return nil if position at point is not under any project."
   (save-excursion
     (cl-loop initially (unless (zerop (org-outline-level)) (org-back-to-heading t))
-             if (orgtd-project-p)
-             return (point-marker)
+             if (orgtd-project-p) return (point-marker)
              unless (org-up-heading-safe) return nil)))
+
+(defclass orgtd-project ()
+  ((location :initarg :location)))
+
+(cl-defmethod orgtd-project-title ((project orgtd-project))
+  (org-with-point-at (oref project location)
+    (nth 4 (org-heading-components))))
+
+(cl-defmethod orgtd-project-active-p ((project orgtd-project))
+  (org-with-point-at (oref project location)
+    (not (member (org-get-todo-state) org-done-keywords))
+    (orgtd-contains-next-p)))
+
+(cl-defmethod orgtd-project-stuck-p ((project orgtd-project))
+  (org-with-point-at (oref project location)
+    (not (or (member (org-get-todo-state) org-done-keywords)
+             (orgtd-contains-next-p)))))
+
+(cl-defmethod orgtd-project-currently-clocked-p ((project orgtd-project))
+  "Return `t' when PROJECT is being clocked currently, `nil' otherwise."
+  (equal (oref project location)
+         (when-let (_ (marker-buffer org-clock-marker))
+           (org-with-point-at org-clock-marker
+             (orgtd-get-project-at-point)))))
+
+(defun orgtd-projects ()
+  (seq-mapcat
+   (lambda (org-file)
+     (with-current-buffer (find-file-noselect org-file)
+       (save-excursion
+         (goto-char (point-min))
+         (cl-loop until (eobp)
+                  if (orgtd-project-p)
+                  collect (orgtd-project :location (point-marker))
+                  and do (org-end-of-subtree 'invisible-ok)
+                  end
+                  do (outline-next-heading)))))
+   (org-agenda-files 'no-restrictions)))
+
+;; (measure-time (length (orgtd-projects)))
 
 (provide 'orgtd)
 
