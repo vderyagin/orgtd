@@ -31,13 +31,14 @@
 ;;; Code:
 
 (require 'org)
+(require 'eieio)
 
 (defgroup orgtd nil
   "Org functions facilitating GTD"
   :group 'org)
 
 ;;;###autoload
-(defun orgtd-todo-p ()
+(defun orgtd-at-todo-p ()
   "Predicate determining if heading at point is a todo item.
 Every headline with a valid todo keyword is considered a todo item."
   (and (org-at-heading-p)
@@ -52,7 +53,7 @@ Heading itself is excluded from search."
          (save-excursion
            (cl-loop initially do (outline-next-heading)
                     while (< (point) subtree-end)
-                    thereis (orgtd-todo-p)
+                    thereis (orgtd-at-todo-p)
                     do (outline-next-heading))))))
 
 ;;;###autoload
@@ -61,33 +62,33 @@ Heading itself is excluded from search."
   (and (org-at-heading-p)
        (save-excursion
          (cl-loop while (org-up-heading-safe)
-                  thereis (orgtd-todo-p)))))
+                  thereis (orgtd-at-todo-p)))))
 
 ;;;###autoload
-(defun orgtd-task-p ()
+(defun orgtd-at-task-p ()
   "Predicate determining if heading at point is a task.
-Task is a todo item (fulfilling `orgtd-todo-p' predicate) that
+Task is a todo item (fulfilling `orgtd-at-todo-p' predicate) that
 does not contain any other todo items."
-  (and (orgtd-todo-p)
+  (and (orgtd-at-todo-p)
        (not (orgtd-contains-todo-p))))
 
 ;;;###autoload
-(defun orgtd-project-p ()
+(defun orgtd-at-project-p ()
   "Predicate determining if heading at point is a root of a project.
-Project is a todo item (fulfilling `orgtd-todo-p' predicate) that
+Project is a todo item (fulfilling `orgtd-at-todo-p' predicate) that
 contains other todo items and is not itself contained under
 higher level todo item."
-  (and (orgtd-todo-p)
+  (and (orgtd-at-todo-p)
        (not (orgtd-contained-in-todo-p))
        (orgtd-contains-todo-p)))
 
 ;;;###autoload
-(defun orgtd-subproject-p ()
+(defun orgtd-at-subproject-p ()
   "Predicate determining if heading at point is a root of subproject.
-Subproject is a todo item (fulfilling `orgtd-todo-p' predicate)
+Subproject is a todo item (fulfilling `orgtd-at-todo-p' predicate)
 that contains other todo items and is itself contained under
 higher level todo item."
-  (and (orgtd-todo-p)
+  (and (orgtd-at-todo-p)
        (orgtd-contained-in-todo-p)
        (orgtd-contains-todo-p)))
 
@@ -109,7 +110,7 @@ Next item is a heading with NEXT todo keyword."
 Return nil if position at point is not under any project."
   (save-excursion
     (cl-loop initially (unless (zerop (org-outline-level)) (org-back-to-heading t))
-             if (orgtd-project-p) return (point-marker)
+             if (orgtd-at-project-p) return (point-marker)
              unless (org-up-heading-safe) return nil)))
 
 (defclass orgtd-project ()
@@ -147,7 +148,7 @@ Return nil if position at point is not under any project."
        (save-excursion
          (goto-char (point-min))
          (cl-loop until (eobp)
-                  if (orgtd-project-p)
+                  if (orgtd-at-project-p)
                   collect (orgtd-project :location (point-marker))
                   and do (org-end-of-subtree 'invisible-ok)
                   end
