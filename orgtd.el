@@ -113,26 +113,30 @@ Return nil if position at point is not under any project."
              unless (org-up-heading-safe) return nil)))
 
 (defclass orgtd-project ()
-  ((location :initarg :location)))
+  ((location :initarg :location)
+   (status :type (member :active :suspended :stuck :finished))))
+
+(cl-defmethod initialize-instance :after
+  ((project orgtd-project) &rest _)
+  (with-slots (location status) project
+    (org-with-point-at location
+      (setq status
+            (if (orgtd-contains-next-p)
+                :active
+              (let ((todo-state (org-get-todo-state)))
+                (cond
+                 ((string= "HOLD" todo-state) :suspended)
+                 ((member todo-state org-done-keywords) :finished)
+                 (t :stuck))))))))
 
 (cl-defmethod orgtd-project-title ((project orgtd-project))
   (org-with-point-at (oref project location)
     (nth 4 (org-heading-components))))
 
-(cl-defmethod orgtd-project-active-p ((project orgtd-project))
-  (org-with-point-at (oref project location)
-    (not (member (org-get-todo-state) org-done-keywords))
-    (orgtd-contains-next-p)))
-
-(cl-defmethod orgtd-project-stuck-p ((project orgtd-project))
-  (org-with-point-at (oref project location)
-    (not (or (member (org-get-todo-state) org-done-keywords)
-             (orgtd-contains-next-p)))))
-
 (cl-defmethod orgtd-project-currently-clocked-p ((project orgtd-project))
   "Return `t' when PROJECT is being clocked currently, `nil' otherwise."
   (equal (oref project location)
-         (when-let (_ (marker-buffer org-clock-marker))
+         (when (marker-buffer org-clock-marker)
            (org-with-point-at org-clock-marker
              (orgtd-get-project-at-point)))))
 
@@ -149,8 +153,6 @@ Return nil if position at point is not under any project."
                   end
                   do (outline-next-heading)))))
    (org-agenda-files 'no-restrictions)))
-
-;; (measure-time (length (orgtd-projects)))
 
 (provide 'orgtd)
 
