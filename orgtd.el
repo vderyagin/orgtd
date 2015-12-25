@@ -114,8 +114,10 @@ Return nil if position at point is not under any project."
              unless (org-up-heading-safe) return nil)))
 
 (defclass orgtd-project ()
-  ((location :initarg :location)
-   (status :type (member :active :suspended :stuck :finished))))
+  ((location :initarg :location
+             :reader orgtd-project-location)
+   (status :type (member :active :suspended :stuck :finished)
+           :reader orgtd-project-status)))
 
 (cl-defmethod initialize-instance :after
   ((project orgtd-project) &rest _)
