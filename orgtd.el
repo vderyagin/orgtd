@@ -157,6 +157,25 @@ Return nil if position at point is not under any project."
                   do (outline-next-heading)))))
    (org-agenda-files 'no-restrictions)))
 
+(defun orgtd-skip-over-projects ()
+  (when (orgtd-at-project-p)
+    (save-excursion (org-end-of-subtree 'invisible-ok))))
+
+(defun orgtd-skip-over-projects-unless (status)
+  (when (and (orgtd-at-project-p)
+             (not (eq (orgtd-project-status (orgtd-project)) status)))
+    (save-excursion (org-end-of-subtree 'invisible-ok))))
+
+(defun orgtd-keep-projects-with-status (status)
+  (save-excursion
+    (if (orgtd-at-project-p)
+        (when (not (eq (orgtd-project-status (orgtd-project)) status))
+          (org-end-of-subtree 'invisible-ok))
+      (if (orgtd-at-todo-p)
+          (org-end-of-subtree 'invisible-ok)
+        (or (outline-next-heading)
+            (point-max))))))
+
 (provide 'orgtd)
 
 ;;; orgtd.el ends here
