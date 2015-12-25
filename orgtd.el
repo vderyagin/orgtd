@@ -114,23 +114,22 @@ Return nil if position at point is not under any project."
              unless (org-up-heading-safe) return nil)))
 
 (defclass orgtd-project ()
-  ((location :initarg :location
-             :reader orgtd-project-location)
+  ((location :reader orgtd-project-location)
    (status :type (member :active :suspended :stuck :finished)
            :reader orgtd-project-status)))
 
 (cl-defmethod initialize-instance :after
   ((project orgtd-project) &rest _)
   (with-slots (location status) project
-    (org-with-point-at location
-      (setq status
-            (if (orgtd-contains-next-p)
-                :active
-              (let ((todo-state (org-get-todo-state)))
-                (cond
-                 ((string= "HOLD" todo-state) :suspended)
-                 ((member todo-state org-done-keywords) :finished)
-                 (t :stuck))))))))
+    (setq location (point-marker)
+          status
+          (if (orgtd-contains-next-p)
+              :active
+            (let ((todo-state (org-get-todo-state)))
+              (cond
+               ((string= "HOLD" todo-state) :suspended)
+               ((member todo-state org-done-keywords) :finished)
+               (t :stuck)))))))
 
 (cl-defmethod orgtd-project-title ((project orgtd-project))
   (org-with-point-at (oref project location)
@@ -152,7 +151,7 @@ Return nil if position at point is not under any project."
          (goto-char (point-min))
          (cl-loop until (eobp)
                   if (orgtd-at-project-p)
-                  collect (orgtd-project :location (point-marker))
+                  collect (orgtd-project)
                   and do (org-end-of-subtree 'invisible-ok)
                   end
                   do (outline-next-heading)))))
