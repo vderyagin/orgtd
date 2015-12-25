@@ -30,8 +30,8 @@
 
 ;;; Code:
 
-(require 'org)
 (require 'eieio)
+(require 'org)
 
 (defgroup orgtd nil
   "Org functions facilitating GTD"
@@ -143,6 +143,7 @@ Return nil if position at point is not under any project."
            (org-with-point-at org-clock-marker
              (orgtd-get-project-at-point)))))
 
+;;;###autoload
 (defun orgtd-projects ()
   (seq-mapcat
    (lambda (org-file)
