@@ -179,6 +179,17 @@ Return nil if position at point is not under any project."
         (or (outline-next-heading)
             (point-max))))))
 
+;;;###autoload
+(defun orgtd-parent-subproject-or-project-location ()
+  (save-excursion
+    (unless (zerop (org-outline-level)) (org-back-to-heading t))
+    (when (and (orgtd-at-todo-p) (org-up-heading-safe))
+      (cl-loop until (zerop (org-outline-level))
+               if (or (orgtd-at-project-p)
+                      (orgtd-at-subproject-p))
+               return (point-marker)
+               unless (org-up-heading-safe) return nil))))
+
 (provide 'orgtd)
 
 ;;; orgtd.el ends here
