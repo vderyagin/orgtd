@@ -115,21 +115,22 @@ Return nil if position at point is not under any project."
 
 (defclass orgtd-project ()
   ((location :reader orgtd-project-location)
+   (last-active-at :reader orgtd-project-last-active-at)
    (status :type (member :active :suspended :stuck :finished)
            :reader orgtd-project-status)))
 
 (cl-defmethod initialize-instance :after
   ((project orgtd-project) &rest _)
-  (with-slots (location status) project
+  (with-slots (location last-active-at status) project
     (setq location (point-marker)
-          status
-          (if (orgtd-contains-next-p)
-              :active
-            (let ((todo-state (org-get-todo-state)))
-              (cond
-               ((string= "HOLD" todo-state) :suspended)
-               ((member todo-state org-done-keywords) :finished)
-               (t :stuck)))))))
+          last-active-at (orgtd-last-clock-out-time)
+          status (if (orgtd-contains-next-p)
+                     :active
+                   (let ((todo-state (org-get-todo-state)))
+                     (cond
+                      ((string= "HOLD" todo-state) :suspended)
+                      ((member todo-state org-done-keywords) :finished)
+                      (t :stuck)))))))
 
 (cl-defmethod orgtd-project-title ((project orgtd-project))
   (org-with-point-at (oref project location)
