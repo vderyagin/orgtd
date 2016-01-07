@@ -190,6 +190,17 @@ Return nil if position at point is not under any project."
                return (point-marker)
                unless (org-up-heading-safe) return nil))))
 
+;;;###autoload
+(defun orgtd-last-clock-out-time ()
+  "Return timestamp corresponding to a last time any item under
+current heading clocked out."
+  (when (org-at-heading-p)
+    (save-excursion
+      (cl-loop with end = (save-excursion (org-end-of-subtree 'invisible-ok))
+               with re = (concat org-clock-string ".*\\]--\\(\\[[^]]+\\]\\)")
+               while (re-search-forward re end 'noerror)
+               maximize (float-time (org-time-string-to-time (match-string 1)))))))
+
 (provide 'orgtd)
 
 ;;; orgtd.el ends here
