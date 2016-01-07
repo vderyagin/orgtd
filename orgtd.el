@@ -180,6 +180,31 @@ Return nil if position at point is not under any project."
             (point-max))))))
 
 ;;;###autoload
+(defun orgtd-keep-tasks ()
+  "Skip function for org agenda that keeps only tasks, skipping
+project and subproject headings."
+  (unless (orgtd-at-task-p)
+    (save-excursion (or (outline-next-heading)
+                        (point-max)))))
+
+;;;###autoload
+(defun orgtd-keep-project-headings ()
+  "Skip function for org agenda that skips everything other then
+project headings."
+  (unless (orgtd-at-project-p)
+    (save-excursion (or (outline-next-heading)
+                        (point-max)))))
+
+;;;###autoload
+(defun orgtd-skip-everything-under-done-headings ()
+  "Skip function for org agenda that skips everything under done
+headings."
+  (save-excursion
+    (cl-loop while (org-up-heading-safe)
+             if (member (org-get-todo-state) org-done-keywords)
+             return (org-end-of-subtree 'invisible-ok))))
+
+;;;###autoload
 (defun orgtd-parent-subproject-or-project-location ()
   (save-excursion
     (unless (zerop (org-outline-level)) (org-back-to-heading t))
