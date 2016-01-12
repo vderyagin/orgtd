@@ -173,12 +173,6 @@ Raise error if not applicable."
     (save-excursion (org-end-of-subtree 'invisible-ok))))
 
 ;;;###autoload
-(defun orgtd-skip-over-projects-unless (status)
-  (when (and (orgtd-at-project-p)
-             (not (eq (orgtd-project-status (orgtd-project)) status)))
-    (save-excursion (org-end-of-subtree 'invisible-ok))))
-
-;;;###autoload
 (defun orgtd-keep-projects-with-status (status)
   (save-excursion
     (if (orgtd-at-project-p)
