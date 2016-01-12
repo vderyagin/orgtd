@@ -113,6 +113,21 @@ Return nil if position at point is not under any project."
              if (orgtd-at-project-p) return (point-marker)
              unless (org-up-heading-safe) return nil)))
 
+(defun orgtd-project-at-point-status ()
+  "Get a symbol representing a status of (sub)project at point.
+Can be either of :active, :suspended, :finished, or :stuck.
+Raise error if not applicable."
+  (if (or (orgtd-at-project-p)
+          (orgtd-at-subproject-p))
+      (if (orgtd-contains-next-p)
+          :active
+        (let ((todo-state (org-get-todo-state)))
+          (cond
+           ((string= "HOLD" todo-state) :suspended)
+           ((member todo-state org-done-keywords) :finished)
+           (t :stuck))))
+    (error "Point is not at (sub)project heading at the moment")))
+
 (defclass orgtd-project ()
   ((location :reader orgtd-project-location)
    (last-active-at :reader orgtd-project-last-active-at)
@@ -124,13 +139,7 @@ Return nil if position at point is not under any project."
   (with-slots (location last-active-at status) project
     (setq location (point-marker)
           last-active-at (orgtd-last-clock-out-time)
-          status (if (orgtd-contains-next-p)
-                     :active
-                   (let ((todo-state (org-get-todo-state)))
-                     (cond
-                      ((string= "HOLD" todo-state) :suspended)
-                      ((member todo-state org-done-keywords) :finished)
-                      (t :stuck)))))))
+          status (orgtd-project-at-point-status))))
 
 (cl-defmethod orgtd-project-title ((project orgtd-project))
   (org-with-point-at (oref project location)
@@ -173,7 +182,7 @@ Return nil if position at point is not under any project."
 (defun orgtd-keep-projects-with-status (status)
   (save-excursion
     (if (orgtd-at-project-p)
-        (when (not (eq (orgtd-project-status (orgtd-project)) status))
+        (unless (eq (orgtd-project-status (orgtd-project)) status)
           (org-end-of-subtree 'invisible-ok))
       (if (orgtd-at-todo-p)
           (org-end-of-subtree 'invisible-ok)
@@ -204,6 +213,14 @@ headings."
     (cl-loop while (org-up-heading-safe)
              if (member (org-get-todo-state) org-done-keywords)
              return (org-end-of-subtree 'invisible-ok))))
+
+;;;###autoload
+(defun orgtd-keep-subprojects-with-status (status)
+  (if (orgtd-at-subproject-p)
+      (unless (eq status (orgtd-project-at-point-status))
+        (org-end-of-subtree 'invisible-ok))
+    (or (outline-next-heading)
+        (point-max))))
 
 ;;;###autoload
 (defun orgtd-parent-subproject-or-project-location ()
