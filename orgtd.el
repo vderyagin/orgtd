@@ -131,19 +131,18 @@ Raise error if not applicable."
 (defclass orgtd-project ()
   ((location :reader orgtd-project-location)
    (last-active-at :reader orgtd-project-last-active-at)
+   (title :reader orgtd-project-title)
    (status :type (member :active :suspended :stuck :finished)
            :reader orgtd-project-status)))
 
 (cl-defmethod initialize-instance :after
   ((project orgtd-project) &rest _)
-  (with-slots (location last-active-at status) project
+  (with-slots (location last-active-at title status) project
     (setq location (point-marker)
           last-active-at (orgtd-last-clock-out-time)
+          title (org-with-point-at location
+                  (nth 4 (org-heading-components)))
           status (orgtd-project-at-point-status))))
-
-(cl-defmethod orgtd-project-title ((project orgtd-project))
-  (org-with-point-at (oref project location)
-    (nth 4 (org-heading-components))))
 
 (cl-defmethod orgtd-project-currently-clocked-p ((project orgtd-project))
   "Return `t' when PROJECT is being clocked currently, `nil' otherwise."
