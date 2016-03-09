@@ -32,6 +32,7 @@
 
 (require 'eieio)
 (require 'org)
+(require 'seq)
 
 (defgroup orgtd nil
   "Org functions facilitating GTD"
