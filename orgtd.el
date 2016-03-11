@@ -153,7 +153,7 @@ Raise error if not applicable."
 (cl-defmethod orgtd-project-currently-clocked-p ((project orgtd-project))
   "Return `t' when PROJECT is being clocked currently, `nil' otherwise."
   (equal (oref project location)
-         (when (marker-buffer org-clock-marker)
+         (when (org-clocking-p)
            (org-with-point-at org-clock-marker
              (orgtd-get-project-at-point)))))
 
