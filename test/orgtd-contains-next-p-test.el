@@ -22,3 +22,12 @@
   (with-org "* heading
 foo bar * NEXT baz")
   (should-not (orgtd-contains-next-p)))
+
+(ert-deftest accepts-other-keywords-if-set ()
+  (with-org "* TODO project
+** TODO subproject
+*** TODO subsubproject
+**** FOOBAR next task"
+    (let ((orgtd-next-task-keywords '("FOOBAR")))
+      (with-org-todo-keywords '("TODO" "FOOBAR" "DONE")
+        (should (orgtd-contains-next-p))))))

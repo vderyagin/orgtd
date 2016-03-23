@@ -32,11 +32,17 @@
 
 (require 'eieio)
 (require 'org)
+(require 'org-clock)
 (require 'seq)
 
 (defgroup orgtd nil
   "Org functions facilitating GTD"
   :group 'org)
+
+(defcustom orgtd-next-task-keywords '("NEXT" "STARTED")
+  "List of keywords of next tasks"
+  :group 'orgtd
+  :type '(set string))
 
 ;;;###autoload
 (defun orgtd-at-todo-p ()
@@ -98,13 +104,14 @@ higher level todo item."
 ;;;###autoload
 (defun orgtd-contains-next-p ()
   "Predicate determining if heading at point contains a next item.
-Next item is a heading with NEXT todo keyword."
+Next item is a heading with keyword in `orgtd-next-task-keywords'."
   (and (org-at-heading-p)
        (let ((subtree-end (save-excursion (org-end-of-subtree 'invisible-ok))))
          (save-excursion
            (cl-loop initially do (outline-next-heading)
                     while (< (point) subtree-end)
-                    thereis (looking-at "^\*\*+ NEXT ")
+                    for state = (org-get-todo-state)
+                    thereis (member state orgtd-next-task-keywords)
                     do (outline-next-heading))))))
 
 ;;;###autoload
