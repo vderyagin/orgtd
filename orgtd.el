@@ -56,12 +56,12 @@ Every headline with a valid todo keyword is considered a todo item."
   "Predicate determining if subtree of heading at point contains a todo item.
 Heading itself is excluded from search."
   (and (org-at-heading-p)
-       (let ((subtree-end (save-excursion (org-end-of-subtree 'invisible-ok))))
-         (save-excursion
-           (cl-loop initially do (outline-next-heading)
-                    while (< (point) subtree-end)
-                    thereis (orgtd-at-todo-p)
-                    do (outline-next-heading))))))
+       (save-excursion
+         (cl-loop initially (outline-next-heading)
+                  with subtree-end = (save-excursion (org-end-of-subtree 'invisible-ok))
+                  while (< (point) subtree-end)
+                  thereis (orgtd-at-todo-p)
+                  do (outline-next-heading)))))
 
 ;;;###autoload
 (defun orgtd-contained-in-todo-p ()
@@ -106,13 +106,13 @@ higher level todo item."
   "Predicate determining if heading at point contains a next item.
 Next item is a heading with keyword in `orgtd-next-task-keywords'."
   (and (org-at-heading-p)
-       (let ((subtree-end (save-excursion (org-end-of-subtree 'invisible-ok))))
-         (save-excursion
-           (cl-loop initially do (outline-next-heading)
-                    while (< (point) subtree-end)
-                    for state = (org-get-todo-state)
-                    thereis (member state orgtd-next-task-keywords)
-                    do (outline-next-heading))))))
+       (save-excursion
+         (cl-loop initially (outline-next-heading)
+                  with subtree-end = (save-excursion (org-end-of-subtree 'invisible-ok))
+                  while (< (point) subtree-end)
+                  for state = (org-get-todo-state)
+                  thereis (member state orgtd-next-task-keywords)
+                  do (outline-next-heading)))))
 
 ;;;###autoload
 (defun orgtd-get-project-at-point ()
