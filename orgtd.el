@@ -89,7 +89,8 @@ contains other todo items and is not itself contained under
 higher level todo item."
   (and (orgtd-at-todo-p)
        (not (orgtd-contained-in-todo-p))
-       (orgtd-contains-todo-p)))
+       (or (org-entry-properties nil "IS_PROJECT")
+           (orgtd-contains-todo-p))))
 
 ;;;###autoload
 (defun orgtd-at-subproject-p ()
