@@ -67,11 +67,9 @@ Heading itself is excluded from search."
 (defun orgtd-contained-in-todo-p ()
   "Predicate determining if heading at point is contained within a heading with a todo keyword."
   (and (org-at-heading-p)
-       (save-restriction
-         (widen)
-         (save-excursion
-           (cl-loop while (org-up-heading-safe)
-                    thereis (orgtd-at-todo-p))))))
+       (org-with-wide-buffer
+        (cl-loop while (org-up-heading-safe)
+                 thereis (orgtd-at-todo-p)))))
 
 ;;;###autoload
 (defun orgtd-at-task-p ()
@@ -119,13 +117,11 @@ Next item is a heading with keyword in `orgtd-next-task-keywords'."
 (defun orgtd-get-project-at-point ()
   "Return marker pointing to heading of project cointaining position at point.
 Return nil if position at point is not under any project."
-  (save-restriction
-    (widen)
-    (save-excursion
-      (cl-loop initially (unless (zerop (org-outline-level))
-                           (org-back-to-heading 'invisible-ok))
-               if (orgtd-at-project-p) return (point-marker)
-               unless (org-up-heading-safe) return nil))))
+  (org-with-wide-buffer
+   (cl-loop initially (unless (zerop (org-outline-level))
+                        (org-back-to-heading 'invisible-ok))
+            if (orgtd-at-project-p) return (point-marker)
+            unless (org-up-heading-safe) return nil)))
 
 (defun orgtd-project-at-point-status ()
   "Get a symbol representing a status of (sub)project at point.
@@ -170,16 +166,14 @@ Raise error if not applicable."
   (seq-mapcat
    (lambda (org-file)
      (with-current-buffer (find-file-noselect org-file)
-       (save-restriction
-         (widen)
-         (save-excursion
-           (goto-char (point-min))
-           (cl-loop until (eobp)
-                    if (orgtd-at-project-p)
-                    collect (orgtd-project)
-                    and do (org-end-of-subtree 'invisible-ok)
-                    end
-                    do (outline-next-heading))))))
+       (org-with-wide-buffer
+        (cl-loop initially (goto-char (point-min))
+                 until (eobp)
+                 if (orgtd-at-project-p)
+                 collect (orgtd-project)
+                 and do (org-end-of-subtree 'invisible-ok)
+                 end
+                 do (outline-next-heading)))))
    (org-agenda-files 'no-restrictions)))
 
 ;;;###autoload
@@ -218,12 +212,10 @@ project headings."
 (defun orgtd-skip-everything-under-done-headings ()
   "Skip function for org agenda that skips everything under done
 headings."
-  (save-restriction
-    (widen)
-    (save-excursion
-      (cl-loop while (org-up-heading-safe)
-               if (member (org-get-todo-state) org-done-keywords)
-               return (org-end-of-subtree 'invisible-ok)))))
+  (org-with-wide-buffer
+   (cl-loop while (org-up-heading-safe)
+            if (member (org-get-todo-state) org-done-keywords)
+            return (org-end-of-subtree 'invisible-ok))))
 
 ;;;###autoload
 (defun orgtd-keep-subprojects-with-status (status)
@@ -235,16 +227,14 @@ headings."
 
 ;;;###autoload
 (defun orgtd-parent-subproject-or-project-location ()
-  (save-restriction
-    (widen)
-    (save-excursion
-      (unless (zerop (org-outline-level)) (org-back-to-heading t))
-      (when (and (orgtd-at-todo-p) (org-up-heading-safe))
-        (cl-loop until (zerop (org-outline-level))
-                 if (or (orgtd-at-project-p)
-                        (orgtd-at-subproject-p))
-                 return (point-marker)
-                 unless (org-up-heading-safe) return nil)))))
+  (org-with-wide-buffer
+   (unless (zerop (org-outline-level)) (org-back-to-heading t))
+   (when (and (orgtd-at-todo-p) (org-up-heading-safe))
+     (cl-loop until (zerop (org-outline-level))
+              if (or (orgtd-at-project-p)
+                     (orgtd-at-subproject-p))
+              return (point-marker)
+              unless (org-up-heading-safe) return nil))))
 
 ;;;###autoload
 (defun orgtd-last-clock-out-time ()
