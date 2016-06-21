@@ -34,6 +34,7 @@
 (require 'org)
 (require 'org-clock)
 (require 'seq)
+(require 'subr-x)
 
 (defgroup orgtd nil
   "Org functions facilitating GTD"
