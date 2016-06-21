@@ -89,7 +89,7 @@ Task is a todo item (fulfilling `orgtd-at-todo-p' predicate) that
 does not contain any other todo items."
   (and (orgtd-at-todo-p)
        (not (orgtd-contains-todo-p))
-       (not (assoc-default orgtd-project-property-name (org-entry-properties)))))
+       (not (org-entry-get nil orgtd-project-property-name))))
 
 ;;;###autoload
 (defun orgtd-at-project-p ()
@@ -100,7 +100,7 @@ higher level todo item."
   (and (orgtd-at-todo-p)
        (not (orgtd-contained-in-todo-p))
        (or (orgtd-contains-todo-p)
-           (assoc-default orgtd-project-property-name (org-entry-properties)))))
+           (org-entry-get nil orgtd-project-property-name))))
 
 ;;;###autoload
 (defun orgtd-at-subproject-p ()
@@ -270,8 +270,9 @@ current heading clocked out."
   "Set a property on project heading indicating activity. Intended for use in hooks"
   (when-let (project (orgtd-get-project-at-point))
     (org-with-point-at project
-      (org-set-property orgtd-project-latest-activity-property-name
-                        (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time))))))
+      (org-entry-put nil
+                     orgtd-project-latest-activity-property-name
+                     (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time))))))
 
 ;;;###autoload
 (defun orgtd-install-hooks ()
