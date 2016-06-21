@@ -275,7 +275,8 @@ current heading clocked out."
 ;;;###autoload
 (defun orgtd-install-hooks ()
   (add-hook 'org-clock-in-hook #'orgtd-set-project-last-active-timestamp)
-  (add-hook 'org-clock-out-hook #'orgtd-set-project-last-active-timestamp))
+  (add-hook 'org-clock-out-hook #'orgtd-set-project-last-active-timestamp)
+  (add-hook 'org-after-todo-state-change-hook #'orgtd-set-project-last-active-timestamp))
 
 (provide 'orgtd)
 
