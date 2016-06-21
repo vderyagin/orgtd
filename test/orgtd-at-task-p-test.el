@@ -17,3 +17,12 @@
 ** b
 ** c"
     (should (orgtd-at-task-p))))
+
+(ert-deftest rejects-empty-explicitly-marked-projects ()
+  (let ((orgtd-project-property-name "IS_PROJECT"))
+    (with-org "* TODO empty project
+:PROPERTIES:
+:IS_PROJECT: true
+:END:
+"
+      (should-not (orgtd-at-task-p)))))

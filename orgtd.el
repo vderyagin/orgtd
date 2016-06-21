@@ -88,7 +88,8 @@ Heading itself is excluded from search."
 Task is a todo item (fulfilling `orgtd-at-todo-p' predicate) that
 does not contain any other todo items."
   (and (orgtd-at-todo-p)
-       (not (orgtd-contains-todo-p))))
+       (not (orgtd-contains-todo-p))
+       (not (assoc-default orgtd-project-property-name (org-entry-properties)))))
 
 ;;;###autoload
 (defun orgtd-at-project-p ()
@@ -98,8 +99,8 @@ contains other todo items and is not itself contained under
 higher level todo item."
   (and (orgtd-at-todo-p)
        (not (orgtd-contained-in-todo-p))
-       (or (assoc-default orgtd-project-property-name (org-entry-properties))
-           (orgtd-contains-todo-p))))
+       (or (orgtd-contains-todo-p)
+           (assoc-default orgtd-project-property-name (org-entry-properties)))))
 
 ;;;###autoload
 (defun orgtd-at-subproject-p ()
