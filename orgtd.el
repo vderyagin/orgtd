@@ -272,6 +272,7 @@ current heading clocked out."
       (org-set-property orgtd-project-latest-activity-property-name
                         (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time))))))
 
+;;;###autoload
 (defun orgtd-install-hooks ()
   (add-hook 'org-clock-in-hook #'orgtd-set-project-last-active-timestamp)
   (add-hook 'org-clock-out-hook #'orgtd-set-project-last-active-timestamp))
