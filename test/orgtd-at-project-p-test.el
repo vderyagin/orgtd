@@ -1,14 +1,15 @@
 (ert-deftest rejects-non-project-headings ()
   (with-org "* plain heading"
-            (should-not (orgtd-at-project-p))))
+    (should-not (orgtd-at-project-p))))
 
 (ert-deftest accepts-empty-todo-item-with-set-property ()
-  (with-org "* TODO empty project heading
+  (let ((orgtd-project-property-name "IS_PROJECT"))
+    (with-org "* TODO empty project heading
 :PROPERTIES:
 :IS_PROJECT: true
 :END:
 "
-            (should (orgtd-at-project-p))))
+      (should (orgtd-at-project-p)))))
 
 (ert-deftest rejects-empty-todo-items-plain-headings ()
   (with-org "* TODO plain todo item"
