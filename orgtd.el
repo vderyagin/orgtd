@@ -161,13 +161,12 @@ Raise error if not applicable."
   ((project orgtd-project) &rest _)
   (with-slots (location last-active-at title status) project
     (setq location (point-marker)
-          last-active-at (or (when-let (time-string
-                                        (assoc-default
-                                         orgtd-project-latest-activity-property-name
-                                         (org-entry-properties)))
-                               (float-time (apply #'encode-time
-                                                  (org-parse-time-string time-string))))
-                             (orgtd-last-clock-out-time))
+          last-active-at (when-let (time-string
+                                    (assoc-default
+                                     orgtd-project-latest-activity-property-name
+                                     (org-entry-properties)))
+                           (float-time (apply #'encode-time
+                                              (org-parse-time-string time-string))))
           title (org-with-point-at location
                   (nth 4 (org-heading-components)))
           status (orgtd-project-at-point-status))))
