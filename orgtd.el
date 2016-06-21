@@ -44,6 +44,16 @@
   :group 'orgtd
   :type '(set string))
 
+(defcustom orgtd-project-latest-activity-property-name "ORGTD_PROJECT_LAST_ACTIVE"
+  "Name of property for storing timestamp corresponding to last activity in project"
+  :group 'orgtd
+  :type 'string)
+
+(defcustom orgtd-project-property-name "ORGTD_IS_PROJECT"
+  "Name of property for explicitly marking a heading as project root"
+  :group 'orgtd
+  :type 'string)
+
 ;;;###autoload
 (defun orgtd-at-todo-p ()
   "Predicate determining if heading at point is a todo item.
@@ -87,7 +97,7 @@ contains other todo items and is not itself contained under
 higher level todo item."
   (and (orgtd-at-todo-p)
        (not (orgtd-contained-in-todo-p))
-       (or (assoc-default "IS_PROJECT" (org-entry-properties))
+       (or (assoc-default orgtd-project-property-name (org-entry-properties))
            (orgtd-contains-todo-p))))
 
 ;;;###autoload
@@ -149,7 +159,13 @@ Raise error if not applicable."
   ((project orgtd-project) &rest _)
   (with-slots (location last-active-at title status) project
     (setq location (point-marker)
-          last-active-at (orgtd-last-clock-out-time)
+          last-active-at (or (when-let (time-string
+                                        (assoc-default
+                                         orgtd-project-latest-activity-property-name
+                                         (org-entry-properties)))
+                               (float-time (apply #'encode-time
+                                                  (org-parse-time-string time-string))))
+                             (orgtd-last-clock-out-time))
           title (org-with-point-at location
                   (nth 4 (org-heading-components)))
           status (orgtd-project-at-point-status))))
@@ -246,6 +262,18 @@ current heading clocked out."
                with re = (concat org-clock-string ".*\\]--\\(\\[[^]]+\\]\\)")
                while (re-search-forward re end 'noerror)
                maximize (float-time (org-time-string-to-time (match-string 1)))))))
+
+
+(defun orgtd-set-project-last-active-timestamp ()
+  "Set a property on project heading indicating activity. Intended for use in hooks"
+  (when-let (project (orgtd-get-project-at-point))
+    (org-with-point-at project
+      (org-set-property orgtd-project-latest-activity-property-name
+                        (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time))))))
+
+(defun orgtd-install-hooks ()
+  (add-hook 'org-clock-in-hook #'orgtd-set-project-last-active-timestamp)
+  (add-hook 'org-clock-out-hook #'orgtd-set-project-last-active-timestamp))
 
 (provide 'orgtd)
 
