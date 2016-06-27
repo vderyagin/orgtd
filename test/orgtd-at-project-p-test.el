@@ -9,6 +9,15 @@
 :IS_PROJECT: true
 :END:
 "
+              (should (orgtd-at-project-p)))))
+
+(ert-deftest accepts-empty-todo-item-with-project-latest-activity-timestamp ()
+  (let ((orgtd-project-latest-activity-property-name "LAST_ACTIVE"))
+    (with-org "* TODO empty project heading
+:PROPERTIES:
+:LAST_ACTIVE: [2016-06-27 Mon 13:29]
+:END:
+"
       (should (orgtd-at-project-p)))))
 
 (ert-deftest rejects-empty-todo-items-plain-headings ()

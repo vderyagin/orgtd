@@ -100,7 +100,8 @@ higher level todo item."
   (and (orgtd-at-todo-p)
        (not (orgtd-contained-in-todo-p))
        (or (orgtd-contains-todo-p)
-           (org-entry-get nil orgtd-project-property-name))))
+           (org-entry-get nil orgtd-project-property-name)
+           (org-entry-get nil orgtd-project-latest-activity-property-name))))
 
 ;;;###autoload
 (defun orgtd-at-subproject-p ()
@@ -162,9 +163,7 @@ Raise error if not applicable."
   (with-slots (location last-active-at title status) project
     (setq location (point-marker)
           last-active-at (when-let (time-string
-                                    (assoc-default
-                                     orgtd-project-latest-activity-property-name
-                                     (org-entry-properties)))
+                                    (org-entry-get nil orgtd-project-latest-activity-property-name))
                            (float-time (apply #'encode-time
                                               (org-parse-time-string time-string))))
           title (org-with-point-at location
