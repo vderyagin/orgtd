@@ -7,7 +7,7 @@
 ;; Created: 22 Oct 2015
 ;; Version: 0.2.0
 
-;; Package-Requires: ()
+;; Package-Requires: ((helm))
 
 ;; This file is not part of GNU Emacs.
 
@@ -263,7 +263,6 @@ current heading clocked out."
                while (re-search-forward re end 'noerror)
                maximize (float-time (org-time-string-to-time (match-string 1)))))))
 
-
 (defun orgtd-set-project-last-active-timestamp ()
   "Set a property on project heading indicating activity. Intended for use in hooks"
   (when-let (project (orgtd-get-project-at-point))
@@ -272,11 +271,20 @@ current heading clocked out."
                      orgtd-project-latest-activity-property-name
                      (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time))))))
 
+(declare-function orgtd-capture-setup "orgtd-capture")
+(declare-function orgtd-agenda-setup "orgtd-agenda")
+
 ;;;###autoload
 (defun orgtd-install-hooks ()
   (add-hook 'org-clock-in-hook #'orgtd-set-project-last-active-timestamp)
   (add-hook 'org-clock-out-hook #'orgtd-set-project-last-active-timestamp)
-  (add-hook 'org-after-todo-state-change-hook #'orgtd-set-project-last-active-timestamp))
+  (add-hook 'org-after-todo-state-change-hook #'orgtd-set-project-last-active-timestamp)
+
+  (with-eval-after-load 'org-capture
+    (orgtd-capture-setup))
+
+  (with-eval-after-load 'org-agenda
+    (orgtd-agenda-setup)))
 
 (provide 'orgtd)
 
