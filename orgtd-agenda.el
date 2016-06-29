@@ -42,7 +42,7 @@
         '((org-agenda-prefix-format '((tags . "  ")
                                       (todo . "  "))))))
 
-(defun orgtd-invoke-project-agenda (marker)
+(defun orgtd-agenda-invoke-for-project-at-marker (marker)
   (org-with-point-at marker
     (org-agenda nil orgtd-agenda-project-key 'subtree)))
 
@@ -66,7 +66,7 @@
                 candidates))))
    (persistent-action
     :initform
-    orgtd-invoke-project-agenda)
+    orgtd-agenda-invoke-for-project-at-marker)
    (persistent-help
     :initform
     "Show project agenda")
@@ -75,12 +75,12 @@
     ("Project(s)" "f1:Show agenda f2:Show agenda+clock in f3:Go to heading f4:Follow link f5:Capture"))
    (action
     :initform
-    '(("Show agenda" . orgtd-invoke-project-agenda)
+    '(("Show agenda" . orgtd-agenda-invoke-for-project-at-marker)
       ("Show agenda + clock in" . (lambda (marker)
                                     (org-with-point-at marker (org-clock-in))
-                                    (orgtd-invoke-project-agenda marker)))
+                                    (orgtd-agenda-invoke-for-project-at-marker marker)))
       ("Go to heading" . org-goto-marker-or-bmk)
-      ("Follow link under heading" . (lambda (marker)
+J      ("Follow link under heading" . (lambda (marker)
                                        (org-with-point-at marker
                                          (beginning-of-line)
                                          (call-interactively #'org-open-at-point))))
@@ -91,7 +91,6 @@
 ;;;###autoload
 (defun orgtd-agenda-projects ()
   (interactive)
-  ;; (org-clone-repo-if-missing)
   (let ((projects (seq-group-by #'orgtd-project-status (orgtd-projects))))
     (helm :prompt "Project: "
           :buffer "*helm org projects*"
@@ -105,6 +104,38 @@
              :candidates (map-elt projects :finished))
            (helm-make-source "Suspended Projects" #'orgtd-project-source
              :candidates (map-elt projects :suspended))))))
+
+;;;###autoload
+(defun orgtd-agenda-for-project-at-point ()
+  "Show agenda view for project at point"
+  (interactive)
+  (if-let ((starting-marker (orgtd-get-location))
+           (project-marker (org-with-point-at starting-marker
+                             (orgtd-get-project-at-point))))
+      (orgtd-agenda-invoke-for-project-at-marker project-marker)
+    (error "Not at project currently")))
+
+;;;###autoload
+(defun orgtd-agenda-for-currently-clocked-project ()
+  "Show agenda view for currently clocked project"
+  (interactive)
+  (if-let (project-marker (when (org-clocking-p)
+                            (org-with-point-at org-clock-marker
+                              (orgtd-get-project-at-point))))
+      (orgtd-agenda-invoke-for-project-at-marker project-marker)
+    (error "No project is currently clocked")))
+
+;;;###autoload
+(defun orgtd-agenda-narrow-to-subproject-at-point ()
+  "Narrow to subproject at point"
+  (interactive)
+  (unless (eq major-mode 'org-agenda-mode)
+    (error "Can only be used in agenda view"))
+  (if-let (marker (orgtd-get-location))
+      (if (org-with-point-at marker (orgtd-at-subproject-p))
+          (orgtd-agenda-invoke-for-project-at-marker marker)
+        (error "Not a subproject"))
+    (org-agenda-error)))
 
 (defun orgtd-agenda-setup ()
   (add-to-list 'org-agenda-custom-commands
