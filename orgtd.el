@@ -271,6 +271,15 @@ current heading clocked out."
                      orgtd-project-latest-activity-property-name
                      (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time))))))
 
+;;;###autoload
+(defun orgtd-narrow-to-project ()
+  (interactive)
+  (if-let (project-marker (orgtd-get-project-at-point))
+      (progn
+        (org-goto-marker-or-bmk project-marker)
+        (org-narrow-to-subtree))
+    (error "Point is not positioned in project")))
+
 (defun orgtd-get-location (&optional noerror)
   (pcase major-mode
     (`org-mode
