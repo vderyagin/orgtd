@@ -206,9 +206,22 @@
                 (forward-line))))))
     (message "Can only remove compact block headers")))
 
+(defun orgtd-agenda-set-appropriate-project-todo-keyword ()
+  "Update project todo keyword to match it's content. Intended to
+be invoked after change took place (from hooks or from code that
+changes stuff within project)"
+  (unless (orgtd-at-project-p) ; do nothing if on project heading (avoid recursion)
+    (when-let (project-marker (orgtd-get-project-at-point))
+      (org-with-point-at project-marker
+        (org-todo (if (orgtd-contains-next-p) "TODO" "HOLD"))))))
+
 (defun orgtd-agenda-setup ()
   (add-hook 'org-agenda-mode-hook #'orgtd-agenda-maybe-update-restrictions)
   (add-hook 'org-agenda-finalize-hook #'orgtd-agenda-remove-empty-block-headers)
+
+  (add-hook 'org-after-refile-insert-hook #'orgtd-agenda-set-appropriate-project-todo-keyword)
+  (add-hook 'org-after-todo-state-change-hook #'orgtd-agenda-set-appropriate-project-todo-keyword)
+  (add-hook 'org-capture-before-finalize-hook #'orgtd-agenda-set-appropriate-project-todo-keyword)
 
   (seq-each (lambda (custom-command)
               (add-to-list 'org-agenda-custom-commands custom-command 'append))
