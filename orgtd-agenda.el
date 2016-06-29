@@ -170,7 +170,46 @@
         (error "Not a subproject"))
     (org-agenda-error)))
 
+(defun orgtd-agenda-maybe-update-restrictions ()
+  "Update restriction (if any), in case tree grown past initial size"
+  (when (and org-agenda-restrict
+             (marker-buffer org-agenda-restrict-begin))
+    (setq org-agenda-restrict-end
+          (org-with-point-at org-agenda-restrict-begin
+            (org-end-of-subtree t)
+            (point-marker)))))
+
+(defun orgtd-agenda--block-header-p (&optional pos)
+  (save-excursion
+    (when pos (goto-char pos))
+    (eq (plist-get (text-properties-at (point)) 'face)
+        'org-agenda-structure)))
+
+(defun orgtd-agenda--empty-block-header-p ()
+  ;; Empty block header is followed by another block
+  ;; header (or nothing), not list of tasks.
+  (let ((next-line-start (1+ (line-end-position))))
+    (and (orgtd-agenda--block-header-p)
+         (or (equal (point-max) next-line-start)
+             (orgtd-agenda--block-header-p next-line-start)))))
+
+(defun orgtd-agenda-remove-empty-block-headers ()
+  "Remove headers of empty blocks in block agenda."
+  (if org-agenda-compact-blocks
+      (progn
+        (let ((buffer-read-only nil))
+          (save-excursion
+            (goto-char (point-min))
+            (while (not (eobp))
+              (if (orgtd-agenda--empty-block-header-p)
+                  (delete-region (line-beginning-position) (1+ (line-end-position)))
+                (forward-line))))))
+    (message "Can only remove compact block headers")))
+
 (defun orgtd-agenda-setup ()
+  (add-hook 'org-agenda-mode-hook #'orgtd-agenda-maybe-update-restrictions)
+  (add-hook 'org-agenda-finalize-hook #'orgtd-agenda-remove-empty-block-headers)
+
   (seq-each (lambda (custom-command)
               (add-to-list 'org-agenda-custom-commands custom-command 'append))
             (list
