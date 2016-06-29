@@ -90,12 +90,12 @@
                  candidates))
      (lambda (candidates)
        (seq-map (lambda (project)
-                 (let ((title (orgtd-project-title project)))
-                   (cons
-                    (if (orgtd-project-currently-clocked-p project)
-                        (propertize title 'face 'bold)
-                      title)
-                    (orgtd-project-location project))))
+                  (let ((title (orgtd-project-title project)))
+                    (cons
+                     (if (orgtd-project-currently-clocked-p project)
+                         (propertize title 'face 'bold)
+                       title)
+                     (orgtd-project-location project))))
                 candidates))))
    (persistent-action
     :initform
