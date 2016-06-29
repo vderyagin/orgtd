@@ -5,6 +5,8 @@
 (require 'orgtd)
 
 (defvar orgtd-agenda-project-key "p")
+(defvar orgtd-agenda-all-projects-key "P")
+(defvar orgtd-agenda-review-key "R")
 
 (defvar orgtd-agenda-custom-command-project
   (list orgtd-agenda-project-key
@@ -41,6 +43,37 @@
                        (org-agenda-skip-entry-if 'nottodo '("*")))))))
         '((org-agenda-prefix-format '((tags . "  ")
                                       (todo . "  "))))))
+
+(defvar orgtd-agenda-custom-command-all-projects
+  (list orgtd-agenda-all-projects-key
+        "Projects"
+        '((todo "*"
+                ((org-agenda-overriding-header "Finished projects")
+                 (org-agenda-skip-function
+                  '(orgtd-keep-projects-with-status :finished))))
+          (todo "*"
+                ((org-agenda-overriding-header "Active projects")
+                 (org-agenda-skip-function
+                  '(orgtd-keep-projects-with-status :active))))
+          (todo "*"
+                ((org-agenda-overriding-header "Stuck projects")
+                 (org-agenda-skip-function
+                  '(orgtd-keep-projects-with-status :stuck))))
+          (todo "*"
+                ((org-agenda-overriding-header "Suspended projects")
+                 (org-agenda-skip-function
+                  '(orgtd-keep-projects-with-status :suspended)))))))
+
+(defvar orgtd-agenda-custom-command-review
+  (list orgtd-agenda-review-key
+        "Review"
+        '((todo "*"
+                ((org-agenda-overriding-header "Stuck projects")
+                 (org-agenda-skip-function
+                  '(orgtd-keep-projects-with-status :stuck))))
+          (todo "DONE|CANCELED"
+                ((org-agenda-overriding-header "Stuff to archive")
+                 (org-agenda-skip-function '(orgtd-skip-everything-under-done-headings)))))))
 
 (defun orgtd-agenda-invoke-for-project-at-marker (marker)
   (org-with-point-at marker
@@ -138,9 +171,12 @@
     (org-agenda-error)))
 
 (defun orgtd-agenda-setup ()
-  (add-to-list 'org-agenda-custom-commands
-               orgtd-agenda-custom-command-project
-               'append)
+  (seq-each (lambda (custom-command)
+              (add-to-list 'org-agenda-custom-commands custom-command 'append))
+            (list
+             orgtd-agenda-custom-command-project
+             orgtd-agenda-custom-command-all-projects
+             orgtd-agenda-custom-command-review))
 
   (add-to-list 'org-agenda-custom-commands-contexts
                `((,orgtd-agenda-project-key ((in-mode . "org-mode"))))))
