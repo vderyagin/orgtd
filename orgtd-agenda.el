@@ -109,6 +109,9 @@
 (defun orgtd-agenda-setup ()
   (add-to-list 'org-agenda-custom-commands
                orgtd-agenda-custom-command-project
-               'append))
+               'append)
+
+  (add-to-list 'org-agenda-custom-commands-contexts
+               `((,orgtd-agenda-project-key ((in-mode . "org-mode"))))))
 
 (provide 'orgtd-agenda)
