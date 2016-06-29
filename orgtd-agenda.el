@@ -85,7 +85,7 @@
     :initform
     ((lambda (candidates)
        (seq-sort (lambda (a b)
-                   (< (or (orgtd-project-last-active-at a) 0)
+                   (> (or (orgtd-project-last-active-at a) 0)
                       (or (orgtd-project-last-active-at b) 0)))
                  candidates))
      (lambda (candidates)
