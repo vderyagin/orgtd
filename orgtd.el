@@ -271,8 +271,8 @@ current heading clocked out."
                      orgtd-project-latest-activity-property-name
                      (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time))))))
 
-(declare-function orgtd-capture-setup "orgtd-capture")
-(declare-function orgtd-agenda-setup "orgtd-agenda")
+(autoload #'orgtd-capture-setup "orgtd-capture")
+(autoload #'orgtd-agenda-setup "orgtd-agenda")
 
 ;;;###autoload
 (defun orgtd-setup ()
