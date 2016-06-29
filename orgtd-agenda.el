@@ -196,14 +196,13 @@
 (defun orgtd-agenda-remove-empty-block-headers ()
   "Remove headers of empty blocks in block agenda."
   (if org-agenda-compact-blocks
-      (progn
-        (let ((buffer-read-only nil))
-          (save-excursion
-            (goto-char (point-min))
-            (while (not (eobp))
-              (if (orgtd-agenda--empty-block-header-p)
-                  (delete-region (line-beginning-position) (1+ (line-end-position)))
-                (forward-line))))))
+      (cl-loop initially (goto-char (point-min))
+               with buffer-read-only = nil
+               for next-line-start = (1+ (line-end-position))
+               until (eobp)
+               if (orgtd-agenda--empty-block-header-p)
+               do (delete-region (line-beginning-position) next-line-start)
+               else do (forward-line))
     (message "Can only remove compact block headers")))
 
 (defun orgtd-agenda-set-appropriate-project-todo-keyword ()
