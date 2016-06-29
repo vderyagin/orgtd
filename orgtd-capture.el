@@ -49,10 +49,10 @@
   (seq-each
    (lambda (template) (add-to-list 'org-capture-templates template 'append))
    '(("s" "subtask" entry
-      (function org--capture-target-subtask)
+      (function orgtd-capture-target-subtask)
       "* NEXT %?\n:PROPERTIES:\n:Captured_at: %U\n:END:")
      ("S" "sibling" entry
-      (function org--capture-target-sibling)
+      (function orgtd-capture-target-sibling)
       "* NEXT %?\n:PROPERTIES:\n:Captured_at: %U\n:END:")))
 
   (seq-each
