@@ -4,40 +4,47 @@
 (require 'org-agenda)
 (require 'orgtd)
 
+(defvar orgtd-agenda-project-key "p")
+
 (defvar orgtd-agenda-custom-command-project
-  '("p" "Project"
-    ((todo "*"
-           ((org-agenda-overriding-header "Project heading")
-            (org-agenda-skip-function '(orgtd-keep-project-headings))
-            (org-agenda-prefix-format '((todo . "  %c: ")))))
-     (todo "*"
-           ((org-agenda-overriding-header "Active subprojects")
-            (org-agenda-skip-function
-             '(orgtd-keep-subprojects-with-status :active))))
-     (todo "*"
-           ((org-agenda-overriding-header "Stuck subprojects")
-            (org-agenda-skip-function
-             '(orgtd-keep-subprojects-with-status :stuck))))
-     (todo "*"
-           ((org-agenda-overriding-header "Suspended subprojects")
-            (org-agenda-skip-function
-             '(orgtd-keep-subprojects-with-status :suspended))))
-     (todo "*"
-           ((org-agenda-overriding-header "Finished subprojects")
-            (org-agenda-skip-function
-             '(orgtd-keep-subprojects-with-status :finished))))
-     (todo "TODO|STARTED|NEXT"
-           ((org-agenda-overriding-header "Relevant")
-            (org-agenda-skip-function '(orgtd-keep-tasks))
-            (org-agenda-sorting-strategy '(todo-state-down))))
-     (tags "-TODO=\"STARTED\"-TODO=\"NEXT\"-TODO=\"TODO\""
-           ((org-agenda-overriding-header "Rest of tasks")
-            (org-agenda-skip-function
-             '(or (orgtd-keep-tasks)
-                  (orgtd-skip-everything-under-done-headings)
-                  (org-agenda-skip-entry-if 'nottodo '("*")))))))
-    ((org-agenda-prefix-format '((tags . "  ")
-                                 (todo . "  "))))))
+  (list orgtd-agenda-project-key
+        "Project"
+        '((todo "*"
+                ((org-agenda-overriding-header "Project heading")
+                 (org-agenda-skip-function '(orgtd-keep-project-headings))
+                 (org-agenda-prefix-format '((todo . "  %c: ")))))
+          (todo "*"
+                ((org-agenda-overriding-header "Active subprojects")
+                 (org-agenda-skip-function
+                  '(orgtd-keep-subprojects-with-status :active))))
+          (todo "*"
+                ((org-agenda-overriding-header "Stuck subprojects")
+                 (org-agenda-skip-function
+                  '(orgtd-keep-subprojects-with-status :stuck))))
+          (todo "*"
+                ((org-agenda-overriding-header "Suspended subprojects")
+                 (org-agenda-skip-function
+                  '(orgtd-keep-subprojects-with-status :suspended))))
+          (todo "*"
+                ((org-agenda-overriding-header "Finished subprojects")
+                 (org-agenda-skip-function
+                  '(orgtd-keep-subprojects-with-status :finished))))
+          (todo "TODO|STARTED|NEXT"
+                ((org-agenda-overriding-header "Relevant")
+                 (org-agenda-skip-function '(orgtd-keep-tasks))
+                 (org-agenda-sorting-strategy '(todo-state-down))))
+          (tags "-TODO=\"STARTED\"-TODO=\"NEXT\"-TODO=\"TODO\""
+                ((org-agenda-overriding-header "Rest of tasks")
+                 (org-agenda-skip-function
+                  '(or (orgtd-keep-tasks)
+                       (orgtd-skip-everything-under-done-headings)
+                       (org-agenda-skip-entry-if 'nottodo '("*")))))))
+        '((org-agenda-prefix-format '((tags . "  ")
+                                      (todo . "  "))))))
+
+(defun orgtd-invoke-project-agenda (marker)
+  (org-with-point-at marker
+    (org-agenda nil orgtd-agenda-project-key 'subtree)))
 
 (defclass orgtd-project-source (helm-source)
   ((nomark :initform t)
@@ -59,9 +66,7 @@
                 candidates))))
    (persistent-action
     :initform
-    (lambda (marker)
-      (org-with-point-at marker
-        (org-agenda nil "p" 'subtree))))
+    orgtd-invoke-project-agenda)
    (persistent-help
     :initform
     "Show project agenda")
@@ -70,13 +75,10 @@
     ("Project(s)" "f1:Show agenda f2:Show agenda+clock in f3:Go to heading f4:Follow link f5:Capture"))
    (action
     :initform
-    '(("Show agenda" . (lambda (marker)
-                         (org-with-point-at marker
-                           (org-agenda nil "p" 'subtree))))
+    '(("Show agenda" . orgtd-invoke-project-agenda)
       ("Show agenda + clock in" . (lambda (marker)
-                                    (org-with-point-at marker
-                                      (org-clock-in)
-                                      (org-agenda nil "p" 'subtree))))
+                                    (org-with-point-at marker (org-clock-in))
+                                    (orgtd-invoke-project-agenda marker)))
       ("Go to heading" . org-goto-marker-or-bmk)
       ("Follow link under heading" . (lambda (marker)
                                        (org-with-point-at marker
