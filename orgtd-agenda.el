@@ -80,7 +80,7 @@
                                     (org-with-point-at marker (org-clock-in))
                                     (orgtd-agenda-invoke-for-project-at-marker marker)))
       ("Go to heading" . org-goto-marker-or-bmk)
-J      ("Follow link under heading" . (lambda (marker)
+      ("Follow link under heading" . (lambda (marker)
                                        (org-with-point-at marker
                                          (beginning-of-line)
                                          (call-interactively #'org-open-at-point))))
