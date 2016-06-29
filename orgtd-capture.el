@@ -2,33 +2,22 @@
 (require 'org-agenda)
 (require 'org-capture)
 
-(defun orgtd-capture-get-location (&optional noerror)
-  (pcase major-mode
-    (`org-mode
-     (point-marker))
-    (`org-agenda-mode
-     (or (org-get-at-bol 'org-hd-marker)
-         (unless noerror
-           (org-agenda-error))))
-    (_ (unless noerror
-         (user-error "Called from the wrong mode")))))
-
 (defun orgtd-capture-target-sibling ()
-  (org-goto-marker-or-bmk (orgtd-capture-get-location))
+  (org-goto-marker-or-bmk (orgtd-get-location))
   (org-back-to-heading)
   (unless (orgtd-at-todo-p)
     (user-error "Not at task"))
   (org-goto-marker-or-bmk (orgtd-parent-subproject-or-project-location)))
 
 (defun orgtd-capture-target-subtask ()
-  (org-goto-marker-or-bmk (orgtd-capture-get-location))
+  (org-goto-marker-or-bmk (orgtd-get-location))
   (org-back-to-heading)
   (unless (orgtd-at-todo-p)
     (user-error "Not at task"))
   (org-goto-marker-or-bmk (point-marker)))
 
 (defun orgtd-capture-subtask-p ()
-  (when-let (location (orgtd-capture-get-location 'noerror))
+  (when-let (location (orgtd-get-location 'noerror))
     (org-with-point-at location
       (unless (zerop (org-outline-level))
         (org-back-to-heading 'invisible-ok)
@@ -36,7 +25,7 @@
              (orgtd-at-todo-p))))))
 
 (defun orgtd-capture-sibling-p ()
-  (when-let (location (orgtd-capture-get-location 'noerror))
+  (when-let (location (orgtd-get-location 'noerror))
     (org-with-point-at location
       (unless (zerop (org-outline-level))
         (org-back-to-heading 'invisible-ok)

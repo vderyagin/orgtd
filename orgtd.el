@@ -271,6 +271,17 @@ current heading clocked out."
                      orgtd-project-latest-activity-property-name
                      (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time))))))
 
+(defun orgtd-get-location (&optional noerror)
+  (pcase major-mode
+    (`org-mode
+     (point-marker))
+    (`org-agenda-mode
+     (or (org-get-at-bol 'org-hd-marker)
+         (unless noerror
+           (org-agenda-error))))
+    (_ (unless noerror
+         (user-error "Called from the wrong mode")))))
+
 (autoload #'orgtd-capture-setup "orgtd-capture")
 (autoload #'orgtd-agenda-setup "orgtd-agenda")
 
