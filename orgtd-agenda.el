@@ -152,8 +152,11 @@
 (defun orgtd-agenda-for-currently-clocked-project ()
   "Show agenda view for currently clocked project"
   (interactive)
+
   (require 'org-clock)
-  (org-clock-load)
+  (unless org-clock-loaded
+    (org-clock-load))
+
   (if-let (project-marker (when (org-clocking-p)
                             (org-with-point-at org-clock-marker
                               (orgtd-get-project-at-point))))
