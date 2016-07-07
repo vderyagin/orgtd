@@ -2,8 +2,19 @@
 (require 'org-agenda)
 (require 'org-capture)
 
-(defvar orgtd-capture-subtask-key "s")
-(defvar orgtd-capture-sibling-key "S")
+(defgroup orgtd-capture nil
+  "Org-capture-related orgtd things"
+  :group 'orgtd)
+
+(defcustom orgtd-capture-subtask-key "s"
+  "A key to select a subtask capture template"
+  :group 'orgtd-capture
+  :type 'string)
+
+(defcustom orgtd-capture-sibling-key "S"
+  "A key to select a sibling capture template"
+  :group 'orgtd-capture
+  :type 'string)
 
 (defun orgtd-capture-target-sibling ()
   (org-goto-marker-or-bmk (orgtd-get-location))

@@ -5,9 +5,24 @@
 (require 'orgtd)
 (require 'orgtd-capture)
 
-(defvar orgtd-agenda-project-key "p")
-(defvar orgtd-agenda-all-projects-key "P")
-(defvar orgtd-agenda-review-key "R")
+(defgroup orgtd-agenda nil
+  "Org-agenda-related orgtd things"
+  :group 'orgtd)
+
+(defcustom orgtd-agenda-project-key "p"
+  "Key to select project-specific agenda view from org-agenda dispatcher"
+  :group 'orgtd-agenda
+  :type 'string)
+
+(defcustom orgtd-agenda-all-projects-key "P"
+  "Key to select agenda view with list of all projects from org-agenda dispatcher"
+  :group 'orgtd-agenda
+  :type 'string)
+
+(defcustom orgtd-agenda-review-key "R"
+  "Key to select review agenda view from org-agenda dispatcher"
+  :group 'orgtd-agenda
+  :type 'string)
 
 (defvar orgtd-agenda-custom-command-project
   (list orgtd-agenda-project-key
