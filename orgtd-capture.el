@@ -2,6 +2,9 @@
 (require 'org-agenda)
 (require 'org-capture)
 
+(defvar orgtd-capture-subtask-key "s")
+(defvar orgtd-capture-sibling-key "S")
+
 (defun orgtd-capture-target-sibling ()
   (org-goto-marker-or-bmk (orgtd-get-location))
   (org-back-to-heading)
@@ -37,16 +40,16 @@
 (defun orgtd-capture-setup ()
   (seq-each
    (lambda (template) (add-to-list 'org-capture-templates template 'append))
-   '(("s" "subtask" entry
+   `((,orgtd-capture-subtask-key "subtask" entry
       (function orgtd-capture-target-subtask)
       "* NEXT %?\n:PROPERTIES:\n:Captured_at: %U\n:END:")
-     ("S" "sibling" entry
+     (,orgtd-capture-sibling-key "sibling" entry
       (function orgtd-capture-target-sibling)
       "* NEXT %?\n:PROPERTIES:\n:Captured_at: %U\n:END:")))
 
   (seq-each
    (lambda (context) (add-to-list 'org-capture-templates-contexts context 'append))
-   '(("s" (orgtd-capture-subtask-p))
-     ("S" (orgtd-capture-sibling-p)))))
+   `((,orgtd-capture-subtask-key (orgtd-capture-subtask-p))
+     (,orgtd-capture-sibling-key (orgtd-capture-sibling-p)))))
 
 (provide 'orgtd-capture)

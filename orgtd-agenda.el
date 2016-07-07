@@ -3,6 +3,7 @@
 (require 'map)
 (require 'org-agenda)
 (require 'orgtd)
+(require 'orgtd-capture)
 
 (defvar orgtd-agenda-project-key "p")
 (defvar orgtd-agenda-all-projects-key "P")
@@ -119,7 +120,7 @@
                                          (call-interactively #'org-open-at-point))))
       ("Capture a task at heading" . (lambda (marker)
                                        (org-with-point-at marker
-                                         (org-capture nil "s"))))))))
+                                         (org-capture nil orgtd-capture-subtask-key))))))))
 
 ;;;###autoload
 (defun orgtd-agenda-projects ()
