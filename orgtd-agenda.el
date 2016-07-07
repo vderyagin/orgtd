@@ -194,7 +194,7 @@
                              (seq-filter #'orgtd-project-last-active-at
                                          (orgtd-projects)))))
       (orgtd-agenda-invoke-for-project-at-marker (orgtd-project-location project))
-    (error "No project is currently clocked")))
+    (error "Did not find any projects with recorded activity")))
 
 ;;;###autoload
 (defun orgtd-agenda-narrow-to-subproject-at-point ()
