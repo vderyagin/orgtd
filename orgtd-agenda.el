@@ -180,6 +180,23 @@
     (error "No project is currently clocked")))
 
 ;;;###autoload
+(defun orgtd-agenda-for-last-clocked-project ()
+  "Show agenda view for currently clocked project or the most recently clocked one."
+  (interactive)
+
+  (require 'org-clock)
+  (unless org-clock-loaded
+    (org-clock-load))
+
+  (if-let (project
+           (car (seq-sort-by #'orgtd-project-last-active-at
+                             #'>
+                             (seq-filter #'orgtd-project-last-active-at
+                                         (orgtd-projects)))))
+      (orgtd-agenda-invoke-for-project-at-marker (orgtd-project-location project))
+    (error "No project is currently clocked")))
+
+;;;###autoload
 (defun orgtd-agenda-narrow-to-subproject-at-point ()
   "Narrow to subproject at point"
   (interactive)
