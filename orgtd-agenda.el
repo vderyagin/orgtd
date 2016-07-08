@@ -180,8 +180,8 @@
     (error "No project is currently clocked")))
 
 ;;;###autoload
-(defun orgtd-agenda-for-last-clocked-project ()
-  "Show agenda view for currently clocked project or the most recently clocked one."
+(defun orgtd-agenda-for-most-recently-active-project ()
+  "Show agenda view for project with most recent recorded activity"
   (interactive)
 
   (require 'org-clock)
