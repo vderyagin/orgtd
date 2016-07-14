@@ -1,5 +1,4 @@
 (require 'helm)
-(require 'helm-plugin)
 (require 'map)
 (require 'org-agenda)
 (require 'orgtd)
