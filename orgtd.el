@@ -267,10 +267,9 @@ current heading clocked out."
 (defun orgtd-set-project-last-active-timestamp ()
   "Set a property on project heading indicating activity. Intended for use in hooks"
   (when-let (project (orgtd-get-project-at-point))
-    (org-with-point-at project
-      (org-entry-put nil
-                     orgtd-project-latest-activity-property-name
-                     (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time))))))
+    (org-entry-put project
+                   orgtd-project-latest-activity-property-name
+                   (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time)))))
 
 ;;;###autoload
 (defun orgtd-narrow-to-project ()
