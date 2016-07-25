@@ -89,7 +89,8 @@ Task is a todo item (fulfilling `orgtd-at-todo-p' predicate) that
 does not contain any other todo items."
   (and (orgtd-at-todo-p)
        (not (orgtd-contains-todo-p))
-       (not (org-entry-get nil orgtd-project-property-name))))
+       (not (org-entry-get nil orgtd-project-property-name))
+       (not (org-entry-get nil orgtd-project-latest-activity-property-name))))
 
 ;;;###autoload
 (defun orgtd-at-project-p ()
