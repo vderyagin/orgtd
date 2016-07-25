@@ -291,6 +291,14 @@ current heading clocked out."
     (_ (unless noerror
          (user-error "Called from the wrong mode")))))
 
+;;;###autoload
+(defun orgtd-mark-as-project ()
+  "Mark heading at point as a root of the project. "
+  (interactive)
+  (org-entry-put (orgtd-get-location)
+                 orgtd-project-property-name
+                 "true"))
+
 (autoload #'orgtd-capture-setup "orgtd-capture")
 (autoload #'orgtd-agenda-setup "orgtd-agenda")
 
