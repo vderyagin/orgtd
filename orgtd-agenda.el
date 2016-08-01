@@ -1,6 +1,7 @@
 (require 'helm)
 (require 'map)
 (require 'org-agenda)
+(require 'org-clock)
 (require 'orgtd)
 (require 'orgtd-capture)
 (require 'subr-x)
@@ -169,7 +170,6 @@
   "Show agenda view for currently clocked project"
   (interactive)
 
-  (require 'org-clock)
   (unless org-clock-loaded
     (org-clock-load))
 
@@ -184,7 +184,6 @@
   "Show agenda view for project with most recent recorded activity"
   (interactive)
 
-  (require 'org-clock)
   (unless org-clock-loaded
     (org-clock-load))
 
