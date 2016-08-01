@@ -3,6 +3,7 @@
 (require 'org-agenda)
 (require 'orgtd)
 (require 'orgtd-capture)
+(require 'subr-x)
 
 (defgroup orgtd-agenda nil
   "Org-agenda-related orgtd things"
@@ -187,11 +188,10 @@
   (unless org-clock-loaded
     (org-clock-load))
 
-  (if-let (project
-           (car (seq-sort-by #'orgtd-project-last-active-at
-                             #'>
-                             (seq-filter #'orgtd-project-last-active-at
-                                         (orgtd-projects)))))
+  (if-let (project (thread-last (orgtd-projects)
+                     (seq-filter #'orgtd-project-last-active-at)
+                     (seq-sort-by #'orgtd-project-last-active-at #'>)
+                     car))
       (orgtd-agenda-invoke-for-project-at-marker (orgtd-project-location project))
     (error "Did not find any projects with recorded activity")))
 
