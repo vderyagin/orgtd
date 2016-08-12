@@ -30,8 +30,7 @@
         "Project"
         '((todo "*"
                 ((org-agenda-overriding-header "Project heading")
-                 (org-agenda-skip-function '(orgtd-keep-project-headings))
-                 (org-agenda-prefix-format '((todo . "  %c: ")))))
+                 (org-agenda-skip-function '(orgtd-keep-project-headings))))
           (todo "*"
                 ((org-agenda-overriding-header "Active subprojects")
                  (org-agenda-skip-function
