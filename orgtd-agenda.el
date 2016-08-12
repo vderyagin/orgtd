@@ -265,6 +265,6 @@ changes stuff within project)"
              orgtd-agenda-custom-command-review))
 
   (add-to-list 'org-agenda-custom-commands-contexts
-               `(,orgtd-agenda-project-key ((in-mode . "org-mode")))))
+               `(,orgtd-agenda-project-key (orgtd-get-project-at-point))))
 
 (provide 'orgtd-agenda)
