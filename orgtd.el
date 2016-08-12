@@ -59,14 +59,16 @@
 (defun orgtd-at-todo-p ()
   "Predicate determining if heading at point is a todo item.
 Every headline with a valid todo keyword is considered a todo item."
-  (and (org-at-heading-p)
+  (and (eq major-mode 'org-mode)
+       (org-at-heading-p)
        (org-get-todo-state)))
 
 ;;;###autoload
 (defun orgtd-contains-todo-p ()
   "Predicate determining if subtree of heading at point contains a todo item.
 Heading itself is excluded from search."
-  (and (org-at-heading-p)
+  (and (eq major-mode 'org-mode)
+       (org-at-heading-p)
        (save-excursion
          (cl-loop initially (outline-next-heading)
                   with subtree-end = (save-excursion (org-end-of-subtree 'invisible-ok))
@@ -77,7 +79,8 @@ Heading itself is excluded from search."
 ;;;###autoload
 (defun orgtd-contained-in-todo-p ()
   "Predicate determining if heading at point is contained within a heading with a todo keyword."
-  (and (org-at-heading-p)
+  (and (eq major-mode 'org-mode)
+       (org-at-heading-p)
        (org-with-wide-buffer
         (cl-loop while (org-up-heading-safe)
                  thereis (orgtd-at-todo-p)))))
@@ -87,7 +90,8 @@ Heading itself is excluded from search."
   "Predicate determining if heading at point is a task.
 Task is a todo item (fulfilling `orgtd-at-todo-p' predicate) that
 does not contain any other todo items."
-  (and (orgtd-at-todo-p)
+  (and (eq major-mode 'org-mode)
+       (orgtd-at-todo-p)
        (not (orgtd-contains-todo-p))
        (not (org-entry-get nil orgtd-project-property-name))
        (not (org-entry-get nil orgtd-project-latest-activity-property-name))))
@@ -98,7 +102,8 @@ does not contain any other todo items."
 Project is a todo item (fulfilling `orgtd-at-todo-p' predicate) that
 contains other todo items and is not itself contained under
 higher level todo item."
-  (and (orgtd-at-todo-p)
+  (and (eq major-mode 'org-mode)
+       (orgtd-at-todo-p)
        (not (orgtd-contained-in-todo-p))
        (or (orgtd-contains-todo-p)
            (org-entry-get nil orgtd-project-property-name)
@@ -110,7 +115,8 @@ higher level todo item."
 Subproject is a todo item (fulfilling `orgtd-at-todo-p' predicate)
 that contains other todo items and is itself contained under
 higher level todo item."
-  (and (orgtd-at-todo-p)
+  (and (eq major-mode 'org-mode)
+       (orgtd-at-todo-p)
        (orgtd-contained-in-todo-p)
        (orgtd-contains-todo-p)))
 
@@ -118,7 +124,8 @@ higher level todo item."
 (defun orgtd-contains-next-p ()
   "Predicate determining if heading at point contains a next item.
 Next item is a heading with keyword in `orgtd-next-task-keywords'."
-  (and (org-at-heading-p)
+  (and (eq major-mode 'org-mode)
+       (org-at-heading-p)
        (save-excursion
          (cl-loop initially (outline-next-heading)
                   with subtree-end = (save-excursion (org-end-of-subtree 'invisible-ok))
