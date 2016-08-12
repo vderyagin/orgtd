@@ -142,7 +142,7 @@
   (interactive)
   (let ((projects (seq-group-by #'orgtd-project-status (orgtd-projects))))
     (helm :prompt "Project: "
-          :buffer "*helm org projects*"
+          :buffer " *helm org projects*"
           :sources
           (list
            (helm-make-source "Stuck Projects" #'orgtd-project-source
