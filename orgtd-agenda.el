@@ -27,7 +27,7 @@
 
 (defvar orgtd-agenda-custom-command-project
   (list orgtd-agenda-project-key
-        "Project"
+        "Project (DON'T INVOKE THIS DIRECTLY)"
         '((todo "*"
                 ((org-agenda-overriding-header "Project heading")
                  (org-agenda-skip-function '(orgtd-keep-project-headings))))
