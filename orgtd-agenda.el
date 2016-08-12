@@ -49,8 +49,7 @@
                   '(orgtd-keep-subprojects-with-status :finished))))
           (todo "TODO|STARTED|NEXT"
                 ((org-agenda-overriding-header "Relevant")
-                 (org-agenda-skip-function '(orgtd-keep-tasks))
-                 (org-agenda-sorting-strategy '(todo-state-down))))
+                 (org-agenda-skip-function '(orgtd-keep-tasks))))
           (tags "-TODO=\"STARTED\"-TODO=\"NEXT\"-TODO=\"TODO\""
                 ((org-agenda-overriding-header "Rest of tasks")
                  (org-agenda-skip-function
