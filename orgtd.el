@@ -172,8 +172,10 @@ Raise error if not applicable."
     (setq location (point-marker)
           last-active-at (when-let (time-string
                                     (org-entry-get nil orgtd-project-latest-activity-property-name))
-                           (float-time (apply #'encode-time
-                                              (org-parse-time-string time-string))))
+                           (thread-last time-string
+                             org-parse-time-string
+                             (apply #'encode-time)
+                             float-time))
           title (org-with-point-at location
                   (nth 4 (org-heading-components)))
           status (orgtd-project-at-point-status))))
