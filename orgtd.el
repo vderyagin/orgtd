@@ -278,7 +278,8 @@ current heading clocked out."
   (when-let (project (orgtd-get-project-at-point))
     (org-entry-put project
                    orgtd-project-latest-activity-property-name
-                   (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time)))))
+                   (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time)))
+    (org-entry-delete project orgtd-project-property-name)))
 
 ;;;###autoload
 (defun orgtd-narrow-to-project ()
