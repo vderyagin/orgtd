@@ -150,13 +150,12 @@ Can be either of :active, :suspended, :finished, or :stuck.
 Raise error if not applicable."
   (if (or (orgtd-at-project-p)
           (orgtd-at-subproject-p))
-      (if (orgtd-contains-next-p)
-          :active
-        (let ((todo-state (org-get-todo-state)))
-          (cond
-           ((string= "HOLD" todo-state) :suspended)
-           ((member todo-state org-done-keywords) :finished)
-           (t :stuck))))
+      (let ((todo-state (org-get-todo-state)))
+        (cond
+         ((string= "HOLD" todo-state) :suspended)
+         ((member todo-state org-done-keywords) :finished)
+         ((orgtd-contains-next-p) :active)
+         (t :stuck)))
     (error "Point is not at (sub)project heading at the moment")))
 
 (defclass orgtd-project ()
