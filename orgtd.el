@@ -203,8 +203,9 @@ Raise error if not applicable."
 
 ;;;###autoload
 (defun orgtd-skip-over-projects ()
-  (when (orgtd-at-project-p)
-    (save-excursion (org-end-of-subtree 'invisible-ok))))
+  (when-let (prj (orgtd-get-project-at-point))
+    (org-with-point-at prj
+      (org-end-of-subtree 'invisible-ok))))
 
 ;;;###autoload
 (defun orgtd-keep-projects-with-status (status)
