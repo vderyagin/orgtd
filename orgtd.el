@@ -97,6 +97,19 @@ does not contain any other todo items."
        (not (org-entry-get nil orgtd-project-latest-activity-property-name))))
 
 ;;;###autoload
+(defun orgtd-contains-scheduled-task-p ()
+  "Predicate determining if subtree of heading at point contains a scheduled task.
+Heading itself is excluded from search."
+  (and (eq major-mode 'org-mode)
+       (org-at-heading-p)
+       (save-excursion
+         (cl-loop initially (outline-next-heading)
+                  with subtree-end = (save-excursion (org-end-of-subtree 'invisible-ok))
+                  while (< (point) subtree-end)
+                  thereis (and (orgtd-at-task-p)
+                               (org-get-scheduled-time (point)))
+                  do (outline-next-heading)))))
+;;;###autoload
 (defun orgtd-at-project-p ()
   "Predicate determining if heading at point is a root of a project.
 Project is a todo item (fulfilling `orgtd-at-todo-p' predicate) that
@@ -154,7 +167,8 @@ Raise error if not applicable."
         (cond
          ((string= "HOLD" todo-state) :suspended)
          ((member todo-state org-done-keywords) :finished)
-         ((orgtd-contains-next-p) :active)
+         ((or (orgtd-contains-next-p)
+              (orgtd-contains-scheduled-task-p)) :active)
          (t :stuck)))
     (error "Point is not at (sub)project heading at the moment")))
 
