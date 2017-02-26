@@ -3,7 +3,7 @@
 
 (package-file "orgtd.el")
 
-(files "*.el")
+(files "orgtd*.el")
 
 (development
  (depends-on "ert-runner"))
