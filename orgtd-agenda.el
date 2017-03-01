@@ -246,7 +246,8 @@ changes stuff within project)"
   (unless (orgtd-at-project-p) ; do nothing if on project heading (avoid recursion)
     (when-let (project-marker (orgtd-get-project-at-point))
       (org-with-point-at project-marker
-        (org-todo (if (orgtd-contains-next-p) "TODO" "HOLD"))))))
+        (org-todo (if (or (orgtd-contains-next-p)
+                          (orgtd-contains-scheduled-task-p)) "TODO" "HOLD"))))))
 
 (defun orgtd-agenda-setup ()
   (add-hook 'org-agenda-mode-hook #'orgtd-agenda-maybe-update-restrictions)
