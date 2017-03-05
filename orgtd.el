@@ -105,9 +105,12 @@ Heading itself is excluded from search."
        (save-excursion
          (cl-loop initially (outline-next-heading)
                   with subtree-end = (save-excursion (org-end-of-subtree 'invisible-ok))
-                  while (< (point) subtree-end)
+                  for here = (point)
+                  while (< here subtree-end)
                   thereis (and (orgtd-at-task-p)
-                               (org-get-scheduled-time (point)))
+                               (not (org-entry-is-done-p))
+                               (or (org-get-deadline-time here)
+                                   (org-get-scheduled-time here)))
                   do (outline-next-heading)))))
 ;;;###autoload
 (defun orgtd-at-project-p ()

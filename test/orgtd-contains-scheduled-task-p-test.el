@@ -18,8 +18,20 @@ SCHEDULED: <2017-02-26 Sun>"
 
 (ert-deftest handles-headings-containing-a-scheduled-todo-item ()
   (with-org "* heading
+** TODO second-level heading
+SCHEDULED: <2017-02-26 Sun>"
+    (should (orgtd-contains-scheduled-task-p))))
+
+(ert-deftest does-not-accept-done-scheduled-items ()
+  (with-org "* heading
 ** DONE second-level heading
 SCHEDULED: <2017-02-26 Sun>"
+    (should-not (orgtd-contains-scheduled-task-p))))
+
+(ert-deftest also-accepts-items-with-deadlines ()
+  (with-org "* heading
+** TODO second-level heading
+DEADLINE: <2017-02-26 Sun>"
     (should (orgtd-contains-scheduled-task-p))))
 
 (ert-deftest finds-deeply-nested-scheduled-todo-items ()
