@@ -5,7 +5,7 @@
 (ert-deftest returns-nil-for-heading-with-some-timestamps-but-no-clocking ()
   (with-org "* heading
 [2016-01-07 Thu]--[2016-01-14 Thu]"
-      (should-not (orgtd-last-clock-out-time))))
+    (should-not (orgtd-last-clock-out-time))))
 
 (ert-deftest returns-clock-out-time-if-been-clocked-only-once ()
   (let ((timestamp "[2016-01-06 Wed 11:31]"))

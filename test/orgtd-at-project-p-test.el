@@ -9,7 +9,7 @@
 :IS_PROJECT: true
 :END:
 "
-              (should (orgtd-at-project-p)))))
+      (should (orgtd-at-project-p)))))
 
 (ert-deftest accepts-empty-todo-item-with-project-latest-activity-timestamp ()
   (let ((orgtd-project-latest-activity-property-name "LAST_ACTIVE"))
