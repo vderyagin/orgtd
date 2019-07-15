@@ -298,6 +298,13 @@ current heading clocked out."
                    (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time)))
     (org-entry-delete project orgtd-project-property-name)))
 
+
+(defun orgtd-fold-finished-project-by-default ()
+  "Fold finished projects by default"
+  (when (and (orgtd-at-project-p) (org-entry-is-done-p))
+    (let ((project (orgtd-get-project-at-point)))
+      (org-entry-put project "VISIBILITY" "folded"))))
+
 ;;;###autoload
 (defun orgtd-narrow-to-project ()
   (interactive)
@@ -334,6 +341,7 @@ current heading clocked out."
   (add-hook 'org-clock-in-hook #'orgtd-set-project-last-active-timestamp)
   (add-hook 'org-clock-out-hook #'orgtd-set-project-last-active-timestamp)
   (add-hook 'org-after-todo-state-change-hook #'orgtd-set-project-last-active-timestamp)
+  (add-hook 'org-after-todo-state-change-hook #'orgtd-fold-finished-project-by-default)
 
   (with-eval-after-load 'org-capture
     (orgtd-capture-setup))
