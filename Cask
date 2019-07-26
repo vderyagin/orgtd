@@ -6,4 +6,4 @@
 (files "orgtd*.el")
 
 (development
- (depends-on "ert-runner"))
+ (depends-on "buttercup"))

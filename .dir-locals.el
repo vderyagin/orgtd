@@ -2,4 +2,4 @@
 ;;; For more information see (info "(emacs) Directory Variables")
 
 ((nil
-  (helm-project-commands-test . "cask exec ert-runner")))
+  (helm-project-commands-test . "cask exec buttercup -L .")))
