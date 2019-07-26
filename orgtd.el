@@ -305,6 +305,19 @@ current heading clocked out."
     (let ((project (orgtd-get-project-at-point)))
       (org-entry-put project "VISIBILITY" "folded"))))
 
+(defun orgtd-set-appropriate-project-todo-keyword ()
+  "Update project todo keyword to match it's content. Intended to
+be invoked after change took place (from hooks or from code that
+changes stuff within project)"
+  (unless (orgtd-at-project-p) ; do nothing if on project heading (avoid recursion)
+    (when-let (project-marker (orgtd-get-project-at-point))
+      (org-with-point-at project-marker
+        (org-todo (if (or (orgtd-contains-next-p)
+                          (eq (orgtd-project-at-point-status) :stuck)
+                          (orgtd-contains-scheduled-task-p))
+                      "TODO"
+                    "HOLD"))))))
+
 ;;;###autoload
 (defun orgtd-narrow-to-project ()
   (interactive)
@@ -341,6 +354,11 @@ current heading clocked out."
   (add-hook 'org-clock-in-hook #'orgtd-set-project-last-active-timestamp)
   (add-hook 'org-clock-out-hook #'orgtd-set-project-last-active-timestamp)
   (add-hook 'org-after-todo-state-change-hook #'orgtd-set-project-last-active-timestamp)
+
+  (add-hook 'org-after-refile-insert-hook #'orgtd-set-appropriate-project-todo-keyword)
+  (add-hook 'org-after-todo-state-change-hook #'orgtd-set-appropriate-project-todo-keyword)
+  (add-hook 'org-capture-before-finalize-hook #'orgtd-set-appropriate-project-todo-keyword)
+
   (add-hook 'org-after-todo-state-change-hook #'orgtd-fold-finished-project-by-default)
 
   (with-eval-after-load 'org-capture
