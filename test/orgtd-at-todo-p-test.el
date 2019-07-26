@@ -1,11 +1,12 @@
-(ert-deftest handles-todos ()
-  (with-org "* TODO foobar"
-    (should (orgtd-at-todo-p))))
+(describe "orgtd-at-todo-p"
+  (it "handles todos"
+    (with-org "* TODO foobar"
+      (expect (orgtd-at-todo-p) :to-be-truthy)))
 
-(ert-deftest handles-non-todos ()
-  (with-org "* foobar"
-    (should-not (orgtd-at-todo-p))))
+  (it "handles non-todos"
+    (with-org "* foobar"
+      (expect (orgtd-at-todo-p) :to-be nil)))
 
-(ert-deftest handles-non-todos-with-what-appears-to-be-a-todo-keyword-but-is-not ()
-  (with-org "* NXT foobar"
-    (should-not (orgtd-at-todo-p))))
+  (it "handles non-todos with what appears to be a todo keyword, but is not"
+    (with-org "* NXT foobar"
+      (expect (orgtd-at-todo-p) :to-be nil))))

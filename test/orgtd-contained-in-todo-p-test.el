@@ -1,27 +1,28 @@
-(ert-deftest handles-top-level-headings ()
-  (with-org "* foo"
-    (should-not (orgtd-contained-in-todo-p))))
+(describe "orgtd-contained-in-todo-p"
+  (it "handles top-level headings"
+    (with-org "* foo"
+      (expect (orgtd-contained-in-todo-p) :to-be nil)))
 
-(ert-deftest handles-headings-with-todo-parent ()
-  (with-org "* TODO foo
+  (it "handles headings with todo parent"
+    (with-org "* TODO foo
 ** <POINT> bar"
-    (should (orgtd-contained-in-todo-p))))
+      (expect (orgtd-contained-in-todo-p) :to-be-truthy)))
 
-(ert-deftest handles-funny-nesting ()
-  (with-org "* a
+  (it "handles funny nesting"
+    (with-org "* a
 ** TODO b
 *** c
 **** <POINT> d"
-    (should (orgtd-contained-in-todo-p))))
+      (expect (orgtd-contained-in-todo-p) :to-be-truthy)))
 
-(ert-deftest rejects-todo-items-in-hierarchy-of-plain-headings ()
-  (with-org "* a
+  (it "rejects todo items in hierarchy of plain headings"
+    (with-org "* a
 ** b
 *** c
 **** d
 ***** TODO <POINT> e"
-    (should-not (orgtd-contained-in-todo-p))))
+      (expect (orgtd-contained-in-todo-p) :to-be nil)))
 
-(ert-deftest gracefully-returns-when-invoked-from-top-level ()
-  (with-org ""
-    (should-not (orgtd-contained-in-todo-p))))
+  (it "gracefully returns when invoked from top level"
+    (with-org ""
+      (expect (orgtd-contained-in-todo-p) :to-be nil))))

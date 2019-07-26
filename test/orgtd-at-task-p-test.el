@@ -1,28 +1,29 @@
-(ert-deftest handles-simple-todo-items ()
-  (with-org "* TODO do a thing"
-    (should (orgtd-at-task-p))))
+(describe "orgtd-at-task-p"
+  (it "handles simple todo items"
+    (with-org "* TODO do a thing"
+      (expect (orgtd-at-task-p) :to-be-truthy)))
 
-(ert-deftest rejects-plain-non-task-headings ()
-  (with-org "* do a thing"
-    (should-not (orgtd-at-task-p))))
+  (it "rejects plain non task headings"
+    (with-org "* do a thing"
+      (expect (orgtd-at-task-p) :to-be nil)))
 
-(ert-deftest rejects-headings-containing-other-todos ()
-  (with-org "* TODO do things
+  (it "rejects headings containing other todos"
+    (with-org "* TODO do things
 ** TODO do first thing
 ** TODO do second thing"
-    (should-not (orgtd-at-task-p))))
+      (expect (orgtd-at-task-p) :to-be nil)))
 
-(ert-deftest handles-plain-child-headings ()
-  (with-org "* TODO a
+  (it "handles plain child headings"
+    (with-org "* TODO a
 ** b
 ** c"
-    (should (orgtd-at-task-p))))
+      (expect (orgtd-at-task-p) :to-be-truthy)))
 
-(ert-deftest rejects-empty-explicitly-marked-projects ()
-  (let ((orgtd-project-property-name "IS_PROJECT"))
-    (with-org "* TODO empty project
+  (it "rejects empty explicitly marked projects"
+    (let ((orgtd-project-property-name "IS_PROJECT"))
+      (with-org "* TODO empty project
 :PROPERTIES:
 :IS_PROJECT: true
 :END:
 "
-      (should-not (orgtd-at-task-p)))))
+        (expect (orgtd-at-task-p) :to-be nil)))))
