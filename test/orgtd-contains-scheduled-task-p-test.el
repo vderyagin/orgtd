@@ -1,52 +1,53 @@
-(ert-deftest handles-headings-without-scheduled-tasks ()
-  (with-org "* heading"
-    (should-not (orgtd-contains-scheduled-task-p))))
+(describe "orgtd-contains-scheduled-task-p"
+  (it "handles headings without scheduled tasks"
+    (with-org "* heading"
+      (expect (orgtd-contains-scheduled-task-p) :to-be nil)))
 
-(ert-deftest ignores-sheduled-status-of-heading-itself ()
-  (with-org "* TODO heading
+  (it "ignores sheduled status of heading itself"
+    (with-org "* TODO heading
 SCHEDULED: <2017-02-26 Sun>"
-    (should-not (orgtd-contains-scheduled-task-p) )))
+      (expect (orgtd-contains-scheduled-task-p) :to-be nil )))
 
-(ert-deftest gracefully-handles-invocation-outside-of-any-headings ()
-  (with-org "some text"
-    (should-not (orgtd-contains-scheduled-task-p))))
+  (it "gracefully handles invocation outside of non-headings"
+    (with-org "some text"
+      (expect (orgtd-contains-scheduled-task-p) :to-be nil)))
 
-(ert-deftest handles-headings-containing-a-non-scheduled-todo-item ()
-  (with-org "* heading
+  (it "handles headingsd -containing a non-scheduled todo item"
+    (with-org "* heading
 ** DONE second-level heading"
-    (should-not (orgtd-contains-scheduled-task-p))))
+      (expect (orgtd-contains-scheduled-task-p) :to-be nil)))
 
-(ert-deftest handles-headings-containing-a-scheduled-todo-item ()
-  (with-org "* heading
+  (it "handles headings containing a scheduled todo item"
+    (with-org "* heading
 ** TODO second-level heading
 SCHEDULED: <2017-02-26 Sun>"
-    (should (orgtd-contains-scheduled-task-p))))
+      (expect (orgtd-contains-scheduled-task-p) :to-be-truthy)))
 
-(ert-deftest does-not-accept-done-scheduled-items ()
-  (with-org "* heading
+  (it "does not accept DONE scheduled items"
+    (with-org "* heading
 ** DONE second-level heading
 SCHEDULED: <2017-02-26 Sun>"
-    (should-not (orgtd-contains-scheduled-task-p))))
+      (expect (orgtd-contains-scheduled-task-p) :to-be nil)))
 
-(ert-deftest also-accepts-items-with-deadlines ()
-  (with-org "* heading
+  (it "also accepts items with deadlines"
+    (with-org "* heading
 ** TODO second-level heading
 DEADLINE: <2017-02-26 Sun>"
-    (should (orgtd-contains-scheduled-task-p))))
+      (expect (orgtd-contains-scheduled-task-p) :to-be-truthy)))
 
-(ert-deftest finds-deeply-nested-scheduled-todo-items ()
-  (with-org "* level 1
+  (it "finds deeply nested scheduled todo items"
+    (with-org "* level 1
 ** level 2
 *** level 3
 **** level 4
 ***** TODO level 5
 SCHEDULED: <2017-02-26 Sun>"
-    (should (orgtd-contains-scheduled-task-p))))
+      (expect (orgtd-contains-scheduled-task-p) :to-be-truthy)))
 
-(ert-deftest limits-itself-to-contents-of-tree-at-point ()
-  (with-org "* heading a
+  (it "limits itself to contents of tree at point"
+    (with-org "* heading a
 ** subheading
 * heading b
 ** TODO subheading
 SCHEDULED: <2017-02-26 Sun>"
-    (should-not (orgtd-contains-scheduled-task-p))))
+      (expect (orgtd-contains-scheduled-task-p) :to-be nil))))

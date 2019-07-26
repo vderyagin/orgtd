@@ -1,36 +1,40 @@
-(ert-deftest bare-headings-are-not-within-any-project ()
-  (with-org "* foo"
-    (should-not (orgtd-get-project-at-point))))
+(describe "orgtd-get-project-at-point"
+  (it "bare headings are not within any project"
+    (with-org "* foo"
+      (expect (orgtd-get-project-at-point) :to-be nil)))
 
-(ert-deftest detects-top-level-projects-at-point ()
-  (with-org "* TODO a
+  (it "detects top level projects at point"
+    (with-org "* TODO a
 ** TODO b
 ** TODO c"
-    (should (equal (point-marker)
-                   (orgtd-get-project-at-point)))))
+      (expect (point-marker)
+              :to-equal
+              (orgtd-get-project-at-point))))
 
-(ert-deftest detects-projects-from-within ()
-  (with-org "* TODO a
+  (it "detects projects from within"
+    (with-org "* TODO a
 ** TODO b
 ** TODO <POINT>c"
-    (should (equal (orgtd-get-project-at-point)
-                   (save-excursion
-                     (goto-char (point-min))
-                     (point-marker))))))
+      (expect (orgtd-get-project-at-point)
+              :to-equal
+              (save-excursion
+                (goto-char (point-min))
+                (point-marker)))))
 
-(ert-deftest detects-non-top-level-projects-from-within ()
-  (with-org "* just a heading
+  (it "detects non-top-level projects from within"
+    (with-org "* just a heading
 ** TODO project
 *** TODO <POINT>c"
-    (should (equal (orgtd-get-project-at-point)
-                   (save-excursion
-                     (search-backward "project")
-                     (move-beginning-of-line 1)
-                     (point-marker))))))
+      (expect  (orgtd-get-project-at-point)
+               :to-equal
+               (save-excursion
+                 (search-backward "project")
+                 (move-beginning-of-line 1)
+                 (point-marker)))))
 
-(ert-deftest is-not-confused-by-todo-item-with-bunch-of-subheadings ()
-  (with-org "* TODO a
+  (it "is not confused by todo item with bunch of subheadings"
+    (with-org "* TODO a
 ** b
 ** c
 *** d"
-    (should-not (orgtd-get-project-at-point))))
+      (expect (orgtd-get-project-at-point) :to-be nil))))
