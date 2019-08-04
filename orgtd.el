@@ -344,7 +344,9 @@ changes stuff within project)"
   (interactive)
   (org-entry-put (orgtd-get-location)
                  orgtd-project-property-name
-                 "true"))
+                 "true")
+  (unless (org-get-todo-state)
+    (org-todo "TODO")))
 
 (autoload #'orgtd-capture-setup "orgtd-capture")
 (autoload #'orgtd-agenda-setup "orgtd-agenda")
