@@ -293,11 +293,13 @@ current heading clocked out."
 (defun orgtd-set-project-last-active-timestamp ()
   "Set a property on project heading indicating activity. Intended for use in hooks"
   (when-let (project (orgtd-get-project-at-point))
-    (org-entry-put project
-                   orgtd-project-latest-activity-property-name
-                   (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time)))
+    (orgtd-bump-latest-activity-timestamp project)
     (org-entry-delete project orgtd-project-property-name)))
+(defun orgtd-bump-latest-activity-timestamp (location)
 
+  (org-entry-put location
+                 orgtd-project-latest-activity-property-name
+                 (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time))))
 
 (defun orgtd-fold-finished-project-by-default ()
   "Fold finished projects by default"
@@ -342,11 +344,9 @@ changes stuff within project)"
 (defun orgtd-mark-as-project ()
   "Mark heading at point as a root of the project. "
   (interactive)
-  (org-entry-put (orgtd-get-location)
-                 orgtd-project-property-name
-                 "true")
   (unless (org-get-todo-state)
-    (org-todo "TODO")))
+    (org-todo "TODO"))
+  (orgtd-bump-latest-activity-timestamp (orgtd-get-location)))
 
 (autoload #'orgtd-capture-setup "orgtd-capture")
 (autoload #'orgtd-agenda-setup "orgtd-agenda")
