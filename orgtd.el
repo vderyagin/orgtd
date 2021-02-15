@@ -1,11 +1,11 @@
 ;;; orgtd.el --- Org functions facilitating GTD -*- lexical-binding: t -*-
 
-;; Copyright (C) 2015-2020  Victor Deryagin
+;; Copyright (C) 2015-2021  Victor Deryagin
 
 ;; Author: Victor Deryagin <vderyagin@gmail.com>
 ;; Maintainer: Victor Deryagin <vderyagin@gmail.com>
 ;; Created: 22 Oct 2015
-;; Version: 0.2.4
+;; Version: 0.2.5
 
 ;; Package-Requires: ((helm))
 
