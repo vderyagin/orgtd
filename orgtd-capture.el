@@ -70,18 +70,15 @@
    `((,orgtd-capture-subtask-key "subtask" entry
       (function orgtd-capture-target-subtask)
       "* NEXT %?\n:PROPERTIES:\n:Captured_at: %U\n:END:"
-      :unnarrowed t
-      :jump-to-captured t)
+      :unnarrowed t)
      (,orgtd-capture-sibling-key "sibling" entry
       (function orgtd-capture-target-sibling)
       "* NEXT %?\n:PROPERTIES:\n:Captured_at: %U\n:END:"
-      :unnarrowed t
-      :jump-to-captured t)
+      :unnarrowed t)
      (,orgtd-capture-note-key "note" plain
       (function orgtd-capture-target-note)
       "- Note taken on %U \\\\\n  %?"
-      :unnarrowed t
-      :jump-to-captured t)))
+      :unnarrowed t)))
 
   (seq-each
    (lambda (context) (add-to-list 'org-capture-templates-contexts context 'append))
