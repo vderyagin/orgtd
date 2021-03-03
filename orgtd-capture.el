@@ -69,16 +69,13 @@
    (lambda (template) (add-to-list 'org-capture-templates template 'append))
    `((,orgtd-capture-subtask-key "subtask" entry
       (function orgtd-capture-target-subtask)
-      "* NEXT %?\n:PROPERTIES:\n:Captured_at: %U\n:END:"
-      :unnarrowed t)
+      "* TODO %?\n:PROPERTIES:\n:Captured_at: %U\n:END:")
      (,orgtd-capture-sibling-key "sibling" entry
       (function orgtd-capture-target-sibling)
-      "* NEXT %?\n:PROPERTIES:\n:Captured_at: %U\n:END:"
-      :unnarrowed t)
+      "* TODO %?\n:PROPERTIES:\n:Captured_at: %U\n:END:")
      (,orgtd-capture-note-key "note" plain
       (function orgtd-capture-target-note)
-      "- Note taken on %U \\\\\n  %?"
-      :unnarrowed t)))
+      "- Note taken on %U \\\\\n  %?")))
 
   (seq-each
    (lambda (context) (add-to-list 'org-capture-templates-contexts context 'append))
