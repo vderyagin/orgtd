@@ -39,8 +39,16 @@
   (org-goto-marker-or-bmk (orgtd-get-location))
   (outline-next-heading)
   (org-show-context)
-  (if (< (point) (point-max))
-      (backward-char))
+  (when (< (point) (point-max))
+    (backward-char))
+  (when (zerop (org-outline-level))
+    ;; mark sequence of notes outside of any headings
+    ;; (before headings or when file has no headings):
+    (or (save-excursion (search-backward "\nNotes:\n" nil 'noerror))
+        (insert "\nNotes:\n")))
+  ;; get rid of extra newlines:
+  (while (looking-back "\n\n" 2)
+    (delete-char -1))
   (org-goto-marker-or-bmk (point-marker)))
 
 (defun orgtd-capture-subtask-p ()
@@ -73,7 +81,7 @@
      (,orgtd-capture-sibling-key "sibling" entry
       (function orgtd-capture-target-sibling)
       "* TODO %?\n:PROPERTIES:\n:Captured_at: %U\n:END:")
-     (,orgtd-capture-note-key "note" plain
+     (,orgtd-capture-note-key "note" item
       (function orgtd-capture-target-note)
       "- Note taken on %U \\\\\n  %?")))
 
