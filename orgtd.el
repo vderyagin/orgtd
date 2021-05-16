@@ -5,7 +5,7 @@
 ;; Author: Victor Deryagin <vderyagin@gmail.com>
 ;; Maintainer: Victor Deryagin <vderyagin@gmail.com>
 ;; Created: 22 Oct 2015
-;; Version: 0.2.5
+;; Version: 0.2.6
 
 ;; Package-Requires: ((helm))
 
