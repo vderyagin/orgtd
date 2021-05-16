@@ -303,7 +303,7 @@ current heading clocked out."
                  orgtd-project-latest-activity-property-name
                  (format-time-string "[%Y-%m-%d %a %H:%M]" (float-time))))
 
-(defun orgtd-fold-finished-project-by-default ()
+(defun orgtd-set-finished-visibility-to-folded ()
   "Fold finished projects by default"
   (when (and (orgtd-at-project-p) (org-entry-is-done-p))
     (let ((project (orgtd-get-project-at-point)))
@@ -363,7 +363,7 @@ changes stuff within project)"
   (add-hook 'org-after-todo-state-change-hook #'orgtd-set-appropriate-project-todo-keyword)
   (add-hook 'org-capture-before-finalize-hook #'orgtd-set-appropriate-project-todo-keyword)
 
-  (add-hook 'org-after-todo-state-change-hook #'orgtd-fold-finished-project-by-default)
+  (add-hook 'org-after-todo-state-change-hook #'orgtd-set-finished-visibility-to-folded)
 
   (with-eval-after-load 'org-capture
     (orgtd-capture-setup))
