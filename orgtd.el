@@ -224,6 +224,7 @@ Raise error if not applicable."
     (org-with-point-at prj
       (org-end-of-subtree 'invisible-ok))))
 
+;;;###autoload
 (defun orgtd-filter-projects (predicate)
   (save-excursion
     (cond
