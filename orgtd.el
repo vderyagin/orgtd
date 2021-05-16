@@ -224,16 +224,23 @@ Raise error if not applicable."
     (org-with-point-at prj
       (org-end-of-subtree 'invisible-ok))))
 
+(defun orgtd-filter-projects (predicate)
+  (save-excursion
+    (cond
+     ((orgtd-at-project-p)
+      (unless (funcall predicate (orgtd-project))
+        (org-end-of-subtree 'invisible-ok)))
+     ((orgtd-at-todo-p)
+      (org-end-of-subtree 'invisible-ok))
+     (t
+      (or (outline-next-heading)
+          (point-max))))))
+
 ;;;###autoload
 (defun orgtd-keep-projects-with-status (status)
-  (save-excursion
-    (if (orgtd-at-project-p)
-        (unless (eq (orgtd-project-status (orgtd-project)) status)
-          (org-end-of-subtree 'invisible-ok))
-      (if (orgtd-at-todo-p)
-          (org-end-of-subtree 'invisible-ok)
-        (or (outline-next-heading)
-            (point-max))))))
+  (orgtd-filter-projects
+   (lambda (project)
+     (eq status (orgtd-project-status project)))))
 
 ;;;###autoload
 (defun orgtd-keep-tasks ()
