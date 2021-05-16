@@ -271,8 +271,10 @@ headings."
 ;;;###autoload
 (defun orgtd-parent-subproject-or-project-location ()
   (org-with-wide-buffer
-   (unless (zerop (org-outline-level)) (org-back-to-heading t))
-   (when (and (orgtd-at-todo-p) (org-up-heading-safe))
+   (unless (zerop (org-outline-level))
+     (org-back-to-heading t))
+   (when (and (orgtd-at-todo-p)
+              (org-up-heading-safe))
      (cl-loop until (zerop (org-outline-level))
               if (or (orgtd-at-project-p)
                      (orgtd-at-subproject-p))
