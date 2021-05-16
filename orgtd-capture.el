@@ -26,7 +26,7 @@
   (org-back-to-heading)
   (unless (orgtd-at-todo-p)
     (user-error "Not at task"))
-  (org-goto-marker-or-bmk (orgtd-parent-subproject-or-project-location)))
+  (org-up-heading-safe))
 
 (defun orgtd-capture-target-subtask ()
   (org-goto-marker-or-bmk (orgtd-get-location))
