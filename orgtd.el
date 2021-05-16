@@ -305,9 +305,9 @@ current heading clocked out."
 
 (defun orgtd-set-finished-visibility-to-folded ()
   "Fold finished projects by default"
-  (when (and (orgtd-at-project-p) (org-entry-is-done-p))
-    (let ((project (orgtd-get-project-at-point)))
-      (org-entry-put project "VISIBILITY" "folded"))))
+  (when (and (org-entry-is-done-p)
+             (orgtd-get-project-at-point))
+    (org-entry-put (point-marker) "VISIBILITY" "folded")))
 
 (defun orgtd-set-appropriate-project-todo-keyword ()
   "Update project todo keyword to match it's content. Intended to
