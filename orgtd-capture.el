@@ -81,7 +81,7 @@
      (,orgtd-capture-sibling-key "sibling" entry
       (function orgtd-capture-target-sibling)
       "* TODO %?\n:PROPERTIES:\n:Captured_at: %U\n:END:")
-     (,orgtd-capture-note-key "note" item
+     (,orgtd-capture-note-key "note" plain
       (function orgtd-capture-target-note)
       "- Note taken on %U \\\\\n  %?")))
 
