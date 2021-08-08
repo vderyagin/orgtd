@@ -98,29 +98,29 @@
   ((nomark :initform t)
    (candidate-transformer
     :initform
-    ((lambda (candidates)
-       (seq-sort (lambda (a b)
-                   (> (or (orgtd-project-last-active-at a) 0)
-                      (or (orgtd-project-last-active-at b) 0)))
-                 candidates))
-     (lambda (candidates)
-       (seq-map (lambda (project)
-                  (let ((title (orgtd-project-title project)))
-                    (cons
-                     (if (orgtd-project-currently-clocked-p project)
-                         (propertize title 'face 'bold)
-                       title)
-                     (orgtd-project-location project))))
-                candidates))))
+    '((lambda (candidates)
+        (seq-sort (lambda (a b)
+                    (> (or (orgtd-project-last-active-at a) 0)
+                       (or (orgtd-project-last-active-at b) 0)))
+                  candidates))
+      (lambda (candidates)
+        (seq-map (lambda (project)
+                   (let ((title (orgtd-project-title project)))
+                     (cons
+                      (if (orgtd-project-currently-clocked-p project)
+                          (propertize title 'face 'bold)
+                        title)
+                      (orgtd-project-location project))))
+                 candidates))))
    (persistent-action
     :initform
-    orgtd-agenda-invoke-for-project-at-marker)
+    'orgtd-agenda-invoke-for-project-at-marker)
    (persistent-help
     :initform
     "Show project agenda")
    (mode-line
     :initform
-    ("Project(s)" "f1:Show agenda f2:Show agenda+clock in f3:Go to heading f4:Follow link f5:Capture"))
+    '("Project(s)" "f1:Show agenda f2:Show agenda+clock in f3:Go to heading f4:Follow link f5:Capture"))
    (action
     :initform
     '(("Show agenda" . orgtd-agenda-invoke-for-project-at-marker)
