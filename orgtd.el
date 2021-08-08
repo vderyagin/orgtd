@@ -193,7 +193,7 @@ Raise error if not applicable."
                              (apply #'encode-time)
                              float-time))
           title (org-with-point-at location
-                  (nth 4 (org-heading-components)))
+                  (org-link-display-format (nth 4 (org-heading-components))))
           status (orgtd-project-at-point-status))))
 
 (cl-defmethod orgtd-project-currently-clocked-p ((project orgtd-project))
