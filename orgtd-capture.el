@@ -39,7 +39,7 @@
   (org-goto-marker-or-bmk (orgtd-get-location))
   (outline-next-heading)
   (org-show-context)
-  (when (< (point) (point-max))
+  (unless (eobp)
     (backward-char))
   (when (zerop (org-outline-level))
     ;; mark sequence of notes outside of any headings
