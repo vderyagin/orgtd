@@ -339,6 +339,7 @@ changes stuff within project)"
         (org-narrow-to-subtree))
     (error "Point is not positioned in project")))
 
+(declare-function org-agenda-error "org-agenda")
 (defun orgtd-get-location (&optional noerror)
   (pcase major-mode
     (`org-mode
