@@ -25,6 +25,25 @@
   :group 'orgtd-agenda
   :type 'string)
 
+(defcustom orgtd-agenda-project-custom-command-variables
+  '((org-agenda-prefix-format '((tags . "  ")
+                                (todo . "  "))))
+  "Variables for Project custom agenda command"
+  :group 'orgtd-agenda
+  :type org-agenda-custom-commands-local-options)
+
+(defcustom orgtd-agenda-all-projects-custom-command-variables
+  nil
+  "Variables for Projects custom agenda command"
+  :group 'orgtd-agenda
+  :type org-agenda-custom-commands-local-options)
+
+(defcustom orgtd-agenda-review-custom-command-variables
+  nil
+  "Variables for Review custom agenda command"
+  :group 'orgtd-agenda
+  :type org-agenda-custom-commands-local-options)
+
 (defvar orgtd-agenda-custom-command-project
   (list orgtd-agenda-project-key
         "Project (DON'T INVOKE THIS DIRECTLY)"
@@ -56,8 +75,7 @@
                   '(or (orgtd-keep-tasks)
                        (orgtd-skip-everything-under-done-headings)
                        (org-agenda-skip-entry-if 'nottodo '("*")))))))
-        '((org-agenda-prefix-format '((tags . "  ")
-                                      (todo . "  "))))))
+        orgtd-agenda-project-custom-command-variables))
 
 (defvar orgtd-agenda-custom-command-all-projects
   (list orgtd-agenda-all-projects-key
@@ -77,7 +95,8 @@
           (todo "*"
                 ((org-agenda-overriding-header "Suspended projects")
                  (org-agenda-skip-function
-                  '(orgtd-keep-projects-with-status :suspended)))))))
+                  '(orgtd-keep-projects-with-status :suspended)))))
+        orgtd-agenda-all-projects-custom-command-variables))
 
 (defvar orgtd-agenda-custom-command-review
   (list orgtd-agenda-review-key
@@ -88,7 +107,8 @@
                   '(orgtd-keep-projects-with-status :stuck))))
           (todo "DONE|CANCELED"
                 ((org-agenda-overriding-header "Stuff to archive")
-                 (org-agenda-skip-function '(orgtd-skip-everything-under-done-headings)))))))
+                 (org-agenda-skip-function '(orgtd-skip-everything-under-done-headings)))))
+        orgtd-agenda-review-custom-command-variables))
 
 (defun orgtd-agenda-invoke-for-project-at-marker (marker)
   (org-with-point-at marker
