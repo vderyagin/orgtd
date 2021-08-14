@@ -50,22 +50,6 @@
         '((todo "*"
                 ((org-agenda-overriding-header "Project heading")
                  (org-agenda-skip-function '(orgtd-keep-project-headings))))
-          (todo "*"
-                ((org-agenda-overriding-header "Active subprojects")
-                 (org-agenda-skip-function
-                  '(orgtd-keep-subprojects-with-status :active))))
-          (todo "*"
-                ((org-agenda-overriding-header "Stuck subprojects")
-                 (org-agenda-skip-function
-                  '(orgtd-keep-subprojects-with-status :stuck))))
-          (todo "*"
-                ((org-agenda-overriding-header "Suspended subprojects")
-                 (org-agenda-skip-function
-                  '(orgtd-keep-subprojects-with-status :suspended))))
-          (todo "*"
-                ((org-agenda-overriding-header "Finished subprojects")
-                 (org-agenda-skip-function
-                  '(orgtd-keep-subprojects-with-status :finished))))
           (todo "TODO|STARTED|NEXT"
                 ((org-agenda-overriding-header "Relevant")
                  (org-agenda-skip-function '(orgtd-keep-tasks))))
@@ -211,18 +195,6 @@
                      car))
       (orgtd-agenda-invoke-for-project-at-marker (orgtd-project-location project))
     (error "Did not find any projects with recorded activity")))
-
-;;;###autoload
-(defun orgtd-agenda-narrow-to-subproject-at-point ()
-  "Narrow to subproject at point"
-  (interactive)
-  (unless (eq major-mode 'org-agenda-mode)
-    (error "Can only be used in agenda view"))
-  (if-let (marker (orgtd-get-location))
-      (if (org-with-point-at marker (orgtd-at-subproject-p))
-          (orgtd-agenda-invoke-for-project-at-marker marker)
-        (error "Not a subproject"))
-    (org-agenda-error)))
 
 (defun orgtd-agenda-maybe-update-restrictions ()
   "Update restriction (if any), in case tree grown past initial size"

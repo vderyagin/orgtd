@@ -126,17 +126,6 @@ higher level todo item."
            (org-entry-get nil orgtd-project-latest-activity-property-name))))
 
 ;;;###autoload
-(defun orgtd-at-subproject-p ()
-  "Predicate determining if heading at point is a root of subproject.
-Subproject is a todo item (fulfilling `orgtd-at-todo-p' predicate)
-that contains other todo items and is itself contained under
-higher level todo item."
-  (and (eq major-mode 'org-mode)
-       (orgtd-at-todo-p)
-       (orgtd-contained-in-todo-p)
-       (orgtd-contains-todo-p)))
-
-;;;###autoload
 (defun orgtd-contains-next-p ()
   "Predicate determining if heading at point contains a next item.
 Next item is a heading with keyword in `orgtd-next-task-keywords'."
@@ -161,11 +150,10 @@ Return nil if position at point is not under any project."
             unless (org-up-heading-safe) return nil)))
 
 (defun orgtd-project-at-point-status ()
-  "Get a symbol representing a status of (sub)project at point.
+  "Get a symbol representing a status of project at point.
 Can be either of :active, :suspended, :finished, or :stuck.
 Raise error if not applicable."
-  (if (or (orgtd-at-project-p)
-          (orgtd-at-subproject-p))
+  (if (orgtd-at-project-p)
       (let ((todo-state (org-get-todo-state)))
         (cond
          ((string= "HOLD" todo-state) :suspended)
@@ -173,7 +161,7 @@ Raise error if not applicable."
          ((or (orgtd-contains-next-p)
               (orgtd-contains-scheduled-task-p)) :active)
          (t :stuck)))
-    (error "Point is not at (sub)project heading at the moment")))
+    (error "Point is not at project heading at the moment")))
 
 (defclass orgtd-project ()
   ((location :reader orgtd-project-location)
@@ -246,7 +234,7 @@ Raise error if not applicable."
 ;;;###autoload
 (defun orgtd-keep-tasks ()
   "Skip function for org agenda that keeps only tasks, skipping
-project and subproject headings."
+project headings."
   (unless (orgtd-at-task-p)
     (save-excursion (or (outline-next-heading)
                         (point-max)))))
@@ -269,23 +257,14 @@ headings."
             return (org-end-of-subtree 'invisible-ok))))
 
 ;;;###autoload
-(defun orgtd-keep-subprojects-with-status (status)
-  (if (orgtd-at-subproject-p)
-      (unless (eq status (orgtd-project-at-point-status))
-        (org-end-of-subtree 'invisible-ok))
-    (or (outline-next-heading)
-        (point-max))))
-
-;;;###autoload
-(defun orgtd-parent-subproject-or-project-location ()
+(defun orgtd-parent-project-location ()
   (org-with-wide-buffer
    (unless (zerop (org-outline-level))
      (org-back-to-heading t))
    (when (and (orgtd-at-todo-p)
               (org-up-heading-safe))
      (cl-loop until (zerop (org-outline-level))
-              if (or (orgtd-at-project-p)
-                     (orgtd-at-subproject-p))
+              if (orgtd-at-project-p)
               return (point-marker)
               unless (org-up-heading-safe) return nil))))
 
