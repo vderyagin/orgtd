@@ -235,12 +235,12 @@
   (add-hook 'org-agenda-mode-hook #'orgtd-agenda-maybe-update-restrictions)
   (add-hook 'org-agenda-finalize-hook #'orgtd-agenda-remove-empty-block-headers)
 
-  (seq-each (lambda (custom-command)
-              (add-to-list 'org-agenda-custom-commands custom-command 'append))
-            (list
-             orgtd-agenda-custom-command-project
-             orgtd-agenda-custom-command-all-projects
-             orgtd-agenda-custom-command-review))
+  (seq-each
+   #'org-add-agenda-custom-command
+   (list
+    orgtd-agenda-custom-command-project
+    orgtd-agenda-custom-command-all-projects
+    orgtd-agenda-custom-command-review))
 
   (add-to-list 'org-agenda-custom-commands-contexts
                `(,orgtd-agenda-project-key (orgtd-get-project-at-point))))
