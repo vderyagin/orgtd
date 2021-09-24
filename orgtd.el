@@ -240,28 +240,6 @@ project headings."
     (save-excursion (or (outline-next-heading)
                         (point-max)))))
 
-(defun orgtd--org-element-timestamp-to-unix-time (timestamp)
-  (thread-first (let ((ts (cadr timestamp)))
-                  (make-decoded-time
-                   :year (plist-get ts :year-end)
-                   :month (plist-get ts :month-end)
-                   :day (plist-get ts :day-end)
-                   :hour (plist-get ts :hour-end)
-                   :minute (plist-get ts :minute-end)))
-    decoded-time-set-defaults
-    encode-time
-    float-time))
-
-(defun orgtd-skip-if-recently-closed (&optional days)
-  (when-let* ((heading (org-element-at-point))
-              (closed-at (org-element-property :closed heading))
-              (closed-at-unix-ts (orgtd--org-element-timestamp-to-unix-time closed-at))
-              ((> closed-at-unix-ts
-                  (- (float-time)
-                     (* 24 60 60
-                        (or days 7))))))
-    (or (outline-next-heading)
-        (point-max))))
 
 ;;;###autoload
 (defun orgtd-keep-project-headings ()
