@@ -91,7 +91,9 @@
                   '(orgtd-keep-projects-with-status :stuck))))
           (todo "DONE|CANCELED"
                 ((org-agenda-overriding-header "Stuff to archive")
-                 (org-agenda-skip-function '(orgtd-skip-everything-under-done-headings)))))
+                 (org-agenda-skip-function
+                  '(or (orgtd-skip-everything-under-done-headings)
+                       (orgtd-skip-if-recently-closed))))))
         orgtd-agenda-review-custom-command-variables))
 
 (defun orgtd-agenda-invoke-for-project-at-marker (marker)
