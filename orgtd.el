@@ -240,6 +240,13 @@ project headings."
     (save-excursion (or (outline-next-heading)
                         (point-max)))))
 
+;;;###autoload
+(defun orgtd-skip-project-headings ()
+  "Skip function for org agenda that skips everything other then
+project headings."
+  (when (orgtd-at-project-p)
+    (save-excursion (or (outline-next-heading)
+                        (point-max)))))
 
 ;;;###autoload
 (defun orgtd-keep-project-headings ()
