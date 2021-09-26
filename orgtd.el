@@ -127,6 +127,15 @@ higher level todo item."
            (org-entry-get nil orgtd-project-latest-activity-property-name))))
 
 ;;;###autoload
+(defun orgtd-buffer-contains-project-p (&optional buf)
+  (with-current-buffer (or buf (current-buffer))
+    (org-with-wide-buffer
+     (cl-loop initially (goto-char (point-min))
+              thereis (orgtd-at-project-p)
+              until (eobp)
+              do (outline-next-heading)))))
+
+;;;###autoload
 (defun orgtd-contains-next-p ()
   "Predicate determining if heading at point contains a next item.
 Next item is a heading with keyword in `orgtd-next-task-keywords'."
