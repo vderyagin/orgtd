@@ -6,13 +6,8 @@
   "Org-capture-related orgtd things"
   :group 'orgtd)
 
-(defcustom orgtd-capture-subtask-key "s"
+(defcustom orgtd-capture-project-task-key "p"
   "A key to select a subtask capture template"
-  :group 'orgtd-capture
-  :type 'string)
-
-(defcustom orgtd-capture-sibling-key "S"
-  "A key to select a sibling capture template"
   :group 'orgtd-capture
   :type 'string)
 
@@ -21,19 +16,11 @@
   :group 'orgtd-capture
   :type 'string)
 
-(defun orgtd-capture-target-sibling ()
+(defun orgtd-capture-target-project-task ()
   (org-goto-marker-or-bmk (orgtd-get-location))
-  (org-back-to-heading)
-  (unless (orgtd-at-todo-p)
-    (user-error "Not at task"))
-  (org-up-heading-safe))
-
-(defun orgtd-capture-target-subtask ()
-  (org-goto-marker-or-bmk (orgtd-get-location))
-  (org-back-to-heading)
-  (unless (orgtd-at-todo-p)
-    (user-error "Not at task"))
-  (org-goto-marker-or-bmk (point-marker)))
+  (if-let (project (orgtd-get-project-at-point))
+      (org-goto-marker-or-bmk project)
+    (user-error "Not at project")))
 
 (defun orgtd-capture-target-note ()
   (org-goto-marker-or-bmk (orgtd-get-location))
@@ -51,22 +38,10 @@
     (delete-char -1))
   (org-goto-marker-or-bmk (point-marker)))
 
-(defun orgtd-capture-subtask-p ()
+(defun orgtd-capture-project-p ()
   (when-let (location (orgtd-get-location 'noerror))
     (org-with-point-at location
-      (unless (zerop (org-outline-level))
-        (org-back-to-heading 'invisible-ok)
-        (and (orgtd-get-project-at-point)
-             (orgtd-at-todo-p))))))
-
-(defun orgtd-capture-sibling-p ()
-  (when-let (location (orgtd-get-location 'noerror))
-    (org-with-point-at location
-      (unless (zerop (org-outline-level))
-        (org-back-to-heading 'invisible-ok)
-        (and (orgtd-get-project-at-point)
-             (not (orgtd-at-project-p))
-             (orgtd-at-todo-p))))))
+      (orgtd-get-project-at-point))))
 
 (defun orgtd-capture-note-p ()
   (orgtd-get-location 'noerror))
@@ -75,11 +50,8 @@
 (defun orgtd-capture-setup ()
   (seq-each
    (lambda (template) (add-to-list 'org-capture-templates template 'append))
-   `((,orgtd-capture-subtask-key "subtask" entry
-      (function orgtd-capture-target-subtask)
-      "* TODO %?\n:PROPERTIES:\n:Captured_at: %U\n:END:")
-     (,orgtd-capture-sibling-key "sibling" entry
-      (function orgtd-capture-target-sibling)
+   `((,orgtd-capture-project-task-key "project task" entry
+      (function orgtd-capture-target-project-task)
       "* TODO %?\n:PROPERTIES:\n:Captured_at: %U\n:END:")
      (,orgtd-capture-note-key "note" plain
       (function orgtd-capture-target-note)
@@ -87,8 +59,7 @@
 
   (seq-each
    (lambda (context) (add-to-list 'org-capture-templates-contexts context 'append))
-   `((,orgtd-capture-subtask-key (orgtd-capture-subtask-p))
-     (,orgtd-capture-sibling-key (orgtd-capture-sibling-p))
+   `((,orgtd-capture-project-task-key (orgtd-capture-project-p))
      (,orgtd-capture-note-key (orgtd-capture-note-p)))))
 
 (provide 'orgtd-capture)
