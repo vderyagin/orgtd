@@ -116,7 +116,7 @@
                                          (call-interactively #'org-open-at-point))))
       ("Capture a task at heading" . (lambda (marker)
                                        (org-with-point-at marker
-                                         (org-capture nil orgtd-capture-subtask-key))))))))
+                                         (org-capture nil orgtd-capture-project-task-key))))))))
 
 ;;;###autoload
 (defun orgtd-agenda-projects ()
