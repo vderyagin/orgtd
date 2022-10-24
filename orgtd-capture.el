@@ -34,7 +34,7 @@
     (or (save-excursion (search-backward "\nNotes:\n" nil 'noerror))
         (insert "\nNotes:\n")))
   ;; get rid of extra newlines:
-  (while (looking-back "\n\n" 2)
+  (while (looking-back "\n\n" (- (point) 2))
     (delete-char -1))
   (org-goto-marker-or-bmk (point-marker)))
 
