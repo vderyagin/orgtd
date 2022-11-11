@@ -1,6 +1,5 @@
 (require 'orgtd)
 (require 'org-agenda)
-(require 'org-capture)
 
 (defgroup orgtd-capture nil
   "Org-capture-related orgtd things"
@@ -46,8 +45,12 @@
 (defun orgtd-capture-note-p ()
   (orgtd-get-location 'noerror))
 
+(defvar org-capture-templates)
+(defvar org-capture-templates-contexts)
+
 ;;;###autoload
 (defun orgtd-capture-setup ()
+  (require 'org-capture)
   (seq-each
    (lambda (template) (add-to-list 'org-capture-templates template 'append))
    `((,orgtd-capture-project-task-key "project task" entry
