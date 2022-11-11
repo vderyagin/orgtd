@@ -79,7 +79,7 @@ Heading itself is excluded from search."
 
 ;;;###autoload
 (defun orgtd-contained-in-todo-p ()
-  "Predicate determining if heading at point is contained within a heading with a todo keyword."
+  "Predicate determining if heading at point is within heading w/ todo keyword."
   (and (eq major-mode 'org-mode)
        (org-at-heading-p)
        (org-with-wide-buffer
