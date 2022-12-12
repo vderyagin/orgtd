@@ -192,7 +192,7 @@
 (defun orgtd-agenda--empty-block-header-p ()
   ;; Empty block header is followed by another block
   ;; header (or nothing), not list of tasks.
-  (let ((next-line-start (1+ (line-end-position))))
+  (let ((next-line-start (1+ (pos-eol))))
     (and (orgtd-agenda--block-header-p)
          (or (equal (point-max) next-line-start)
              (orgtd-agenda--block-header-p next-line-start)))))
@@ -202,10 +202,10 @@
   (if org-agenda-compact-blocks
       (cl-loop initially (goto-char (point-min))
                with buffer-read-only = nil
-               for next-line-start = (1+ (line-end-position))
+               for next-line-start = (1+ (pos-eol))
                until (eobp)
                if (orgtd-agenda--empty-block-header-p)
-               do (delete-region (line-beginning-position) next-line-start)
+               do (delete-region (pos-bol) next-line-start)
                else do (forward-line))
     (message "Can only remove compact block headers")))
 
