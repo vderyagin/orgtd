@@ -24,7 +24,7 @@
 (defun orgtd-capture-target-note ()
   (org-goto-marker-or-bmk (orgtd-get-location))
   (outline-next-heading)
-  (org-show-context)
+  (org-fold-show-context)
   (unless (eobp)
     (backward-char))
   (when (zerop (org-outline-level))
