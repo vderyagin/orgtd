@@ -153,11 +153,12 @@ Next item is a heading with keyword in `orgtd-next-task-keywords'."
 (defun orgtd-get-project-at-point ()
   "Return marker pointing to heading of project cointaining position at point.
 Return nil if position at point is not under any project."
-  (org-with-wide-buffer
-   (cl-loop initially (unless (zerop (org-outline-level))
-                        (org-back-to-heading 'invisible-ok))
-            if (orgtd-at-project-p) return (point-marker)
-            unless (org-up-heading-safe) return nil)))
+  (when (eq major-mode 'org-mode)
+    (org-with-wide-buffer
+     (cl-loop initially (unless (zerop (org-outline-level))
+                          (org-back-to-heading 'invisible-ok))
+              if (orgtd-at-project-p) return (point-marker)
+              unless (org-up-heading-safe) return nil))))
 
 (defun orgtd-project-at-point-status ()
   "Get a symbol representing a status of project at point.
