@@ -32,7 +32,8 @@
                `(,orgtd-capture-project-task-key
                  "project task" entry
                  (function orgtd-capture-target-project-task)
-                 "* TODO %?\n:PROPERTIES:\n:Captured_at: %U\n:END:")'append)
+                 "* TODO %?\n:PROPERTIES:\n:Captured_at: %U\n:END:")
+               'append)
 
   (add-to-list 'org-capture-templates-contexts
                `(,orgtd-capture-project-task-key (orgtd-capture-project-p))
