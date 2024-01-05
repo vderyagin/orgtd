@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (require 'helm)
 (require 'map)
 (require 'org-agenda)
