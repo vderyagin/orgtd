@@ -12,46 +12,16 @@
   "Org-agenda-related orgtd things"
   :group 'orgtd)
 
-(defcustom orgtd-agenda-project-key "p"
-  "Key to select project-specific agenda view from org-agenda dispatcher"
-  :group 'orgtd-agenda
-  :type 'string)
-
 (defcustom orgtd-agenda-all-projects-key "P"
   "Key to select agenda view with list of all projects from org-agenda dispatcher"
   :group 'orgtd-agenda
   :type 'string)
-
-
-(defcustom orgtd-agenda-project-custom-command-variables
-  '((org-agenda-prefix-format '((tags . "  ")
-                                (todo . "  "))))
-  "Variables for Project custom agenda command"
-  :group 'orgtd-agenda
-  :type org-agenda-custom-commands-local-options)
 
 (defcustom orgtd-agenda-all-projects-custom-command-variables
   nil
   "Variables for Projects custom agenda command"
   :group 'orgtd-agenda
   :type org-agenda-custom-commands-local-options)
-
-(defvar orgtd-agenda-custom-command-project
-  (list orgtd-agenda-project-key
-        "Project (DON'T INVOKE THIS DIRECTLY)"
-        '((todo "*"
-                ((org-agenda-overriding-header "Project heading")
-                 (org-agenda-skip-function '(orgtd-keep-project-headings))))
-          (todo "TODO|STARTED|NEXT"
-                ((org-agenda-overriding-header "Relevant")
-                 (org-agenda-skip-function '(orgtd-keep-tasks))))
-          (tags "-TODO=\"STARTED\"-TODO=\"NEXT\"-TODO=\"TODO\""
-                ((org-agenda-overriding-header "Rest of tasks")
-                 (org-agenda-skip-function
-                  '(or (orgtd-keep-tasks)
-                       (orgtd-skip-everything-under-done-headings)
-                       (org-agenda-skip-entry-if 'nottodo '("*")))))))
-        orgtd-agenda-project-custom-command-variables))
 
 (defvar orgtd-agenda-custom-command-all-projects
   (list orgtd-agenda-all-projects-key
@@ -74,10 +44,6 @@
                   '(orgtd-keep-projects-with-status :suspended)))))
         orgtd-agenda-all-projects-custom-command-variables))
 
-(defun orgtd-agenda-invoke-for-project-at-marker (marker)
-  (org-with-point-at marker
-    (org-agenda nil orgtd-agenda-project-key 'subtree)))
-
 (defclass orgtd-project-source (helm-source)
   ((nomark :initform t)
    (candidate-transformer
@@ -98,20 +64,19 @@
                  candidates))))
    (persistent-action
     :initform
-    'orgtd-agenda-invoke-for-project-at-marker)
+    'org-goto-marker-or-bmk)
    (persistent-help
     :initform
-    "Show project agenda")
+    "Show project")
    (mode-line
     :initform
-    '("Project(s)" "f1:Show agenda f2:Show agenda+clock in f3:Go to heading f4:Follow link f5:Capture"))
+    '("Project(s)" "f1:Show project f2:Show project+clock in f3:Follow link f4:Capture"))
    (action
     :initform
-    '(("Show agenda" . orgtd-agenda-invoke-for-project-at-marker)
-      ("Show agenda + clock in" . (lambda (marker)
+    '(("Show project" . org-goto-marker-or-bmk)
+      ("Show project + clock in" . (lambda (marker)
                                     (org-with-point-at marker (org-clock-in))
-                                    (orgtd-agenda-invoke-for-project-at-marker marker)))
-      ("Go to heading" . org-goto-marker-or-bmk)
+                                    (org-goto-marker-or-bmk marker)))
       ("Follow link under heading" . (lambda (marker)
                                        (org-with-point-at marker
                                          (beginning-of-line)
@@ -136,54 +101,6 @@
              :candidates (map-elt projects :finished))
            (helm-make-source "Suspended Projects" #'orgtd-project-source
              :candidates (map-elt projects :suspended))))))
-
-;;;###autoload
-(defun orgtd-agenda-for-project-at-point ()
-  "Show agenda view for project at point"
-  (interactive)
-  (if-let ((starting-marker (orgtd-get-location))
-           (project-marker (org-with-point-at starting-marker
-                             (orgtd-get-project-at-point))))
-      (orgtd-agenda-invoke-for-project-at-marker project-marker)
-    (error "Not at project currently")))
-
-;;;###autoload
-(defun orgtd-agenda-for-currently-clocked-project ()
-  "Show agenda view for currently clocked project"
-  (interactive)
-
-  (unless org-clock-loaded
-    (org-clock-load))
-
-  (if-let (project-marker (when (org-clocking-p)
-                            (org-with-point-at org-clock-marker
-                              (orgtd-get-project-at-point))))
-      (orgtd-agenda-invoke-for-project-at-marker project-marker)
-    (error "No project is currently clocked")))
-
-;;;###autoload
-(defun orgtd-agenda-for-most-recently-active-project ()
-  "Show agenda view for project with most recent recorded activity"
-  (interactive)
-
-  (unless org-clock-loaded
-    (org-clock-load))
-
-  (if-let (project (thread-last (orgtd-projects)
-                     (seq-filter #'orgtd-project-last-active-at)
-                     (seq-sort-by #'orgtd-project-last-active-at #'>)
-                     car))
-      (orgtd-agenda-invoke-for-project-at-marker (orgtd-project-location project))
-    (error "Did not find any projects with recorded activity")))
-
-(defun orgtd-agenda-maybe-update-restrictions ()
-  "Update restriction (if any), in case tree grown past initial size"
-  (when (and org-agenda-restrict
-             (marker-buffer org-agenda-restrict-begin))
-    (setq org-agenda-restrict-end
-          (org-with-point-at org-agenda-restrict-begin
-            (org-end-of-subtree t)
-            (point-marker)))))
 
 (defun orgtd-agenda--block-header-p (&optional pos)
   (save-excursion
@@ -212,16 +129,7 @@
     (message "Can only remove compact block headers")))
 
 (defun orgtd-agenda-setup ()
-  (add-hook 'org-agenda-mode-hook #'orgtd-agenda-maybe-update-restrictions)
   (add-hook 'org-agenda-finalize-hook #'orgtd-agenda-remove-empty-block-headers)
-
-  (seq-each
-   #'org-add-agenda-custom-command
-   (list
-    orgtd-agenda-custom-command-project
-    orgtd-agenda-custom-command-all-projects))
-
-  (add-to-list 'org-agenda-custom-commands-contexts
-               `(,orgtd-agenda-project-key (orgtd-get-project-at-point))))
+  (org-add-agenda-custom-command orgtd-agenda-custom-command-all-projects))
 
 (provide 'orgtd-agenda)
