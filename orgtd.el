@@ -270,10 +270,9 @@ project headings."
 (defun orgtd-keep-projects ()
   "Skip function for org agenda that skips everything outside projects."
   (unless (orgtd-get-project-at-point)
-    (unless (zerop (org-outline-level))
-      (org-up-heading-safe))
-    (save-excursion (or (outline-next-heading)
-                        (point-max)))))
+    (save-excursion
+      (or (outline-next-heading)
+          (point-max)))))
 
 ;;;###autoload
 (defun orgtd-skip-everything-under-done-headings ()
