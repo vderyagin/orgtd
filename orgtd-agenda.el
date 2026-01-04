@@ -1,6 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
-(require 'helm)
+(require 'consult)
+(require 'embark)
 (require 'map)
 (require 'org-agenda)
 (require 'org-clock)
@@ -44,63 +45,96 @@
                   '(orgtd-keep-projects-with-status :suspended)))))
         orgtd-agenda-all-projects-custom-command-variables))
 
-(defclass orgtd-project-source (helm-source)
-  ((nomark :initform t)
-   (candidate-transformer
-    :initform
-    '((lambda (candidates)
-        (seq-sort (lambda (a b)
-                    (> (or (orgtd-project-last-active-at a) 0)
-                       (or (orgtd-project-last-active-at b) 0)))
-                  candidates))
-      (lambda (candidates)
-        (seq-map (lambda (project)
-                   (let ((title (orgtd-project-title project)))
-                     (cons
-                      (if (orgtd-project-currently-clocked-p project)
-                          (propertize title 'face 'bold)
-                        title)
-                      (orgtd-project-location project))))
-                 candidates))))
-   (persistent-action
-    :initform
-    'org-goto-marker-or-bmk)
-   (persistent-help
-    :initform
-    "Show project")
-   (mode-line
-    :initform
-    '("Project(s)" "f1:Show project f2:Show project+clock in f3:Follow link f4:Capture"))
-   (action
-    :initform
-    '(("Show project" . org-goto-marker-or-bmk)
-      ("Show project + clock in" . (lambda (marker)
-                                     (org-with-point-at marker (org-clock-in))
-                                     (org-goto-marker-or-bmk marker)))
-      ("Follow link under heading" . (lambda (marker)
-                                       (org-with-point-at marker
-                                         (beginning-of-line)
-                                         (call-interactively #'org-open-at-point))))
-      ("Capture a task at heading" . (lambda (marker)
-                                       (org-with-point-at marker
-                                         (org-capture nil orgtd-capture-project-task-key))))))))
+(defvar-keymap embark-orgtd-project-actions
+  :doc "Keymap for actions on orgtd projects"
+  "RET" #'orgtd-agenda--project-show
+  "c" #'orgtd-agenda--project-clock-in
+  "l" #'orgtd-agenda--project-follow-link
+  "t" #'orgtd-agenda--project-capture-task)
+
+(add-to-list 'embark-keymap-alist '(orgtd-project . embark-orgtd-project-actions))
+
+(defun orgtd-agenda--project-show (marker)
+  (org-goto-marker-or-bmk marker))
+
+(defun orgtd-agenda--project-clock-in (marker)
+  (org-with-point-at marker (org-clock-in))
+  (org-goto-marker-or-bmk marker))
+
+(defun orgtd-agenda--project-follow-link (marker)
+  (org-with-point-at marker
+    (beginning-of-line)
+    (call-interactively #'org-open-at-point)))
+
+(defun orgtd-agenda--project-capture-task (marker)
+  (org-with-point-at marker
+    (org-capture nil orgtd-capture-project-task-key)))
+
+(defun orgtd-agenda--format-project (project)
+  (let* ((title (orgtd-project-title project))
+         (display (if (orgtd-project-currently-clocked-p project)
+                      (propertize title 'face 'bold)
+                    title))
+         (marker (orgtd-project-location project)))
+    (propertize display
+                'orgtd-project-marker marker
+                'consult--candidate marker)))
+
+(defun orgtd-agenda--project-candidates (projects)
+  (seq-map #'orgtd-agenda--format-project
+           (seq-sort (lambda (a b)
+                       (> (or (orgtd-project-last-active-at a) 0)
+                          (or (orgtd-project-last-active-at b) 0)))
+                     projects)))
+
+(defun orgtd-agenda--project-state ()
+  (let ((jump-state (consult--jump-preview)))
+    (lambda (action cand)
+      (let ((marker (and cand (get-text-property 0 'consult--candidate cand))))
+        (funcall jump-state action marker)))))
+
+(defun orgtd-agenda--get-marker (cand)
+  (when cand
+    (get-text-property 0 'consult--candidate cand)))
+
+(defun orgtd-agenda--embark-target ()
+  (when-let* ((cand (run-hook-with-args-until-success 'consult--completion-candidate-hook))
+              (marker (orgtd-agenda--get-marker cand)))
+    (cons 'orgtd-project marker)))
 
 ;;;###autoload
 (defun orgtd-agenda-projects ()
   (interactive)
-  (let ((projects (seq-group-by #'orgtd-project-status (orgtd-projects))))
-    (helm :prompt "Project: "
-          :buffer " *helm org projects*"
-          :sources
-          (list
-           (helm-make-source "Stuck Projects" #'orgtd-project-source
-             :candidates (map-elt projects :stuck))
-           (helm-make-source "Active Projects" #'orgtd-project-source
-             :candidates (map-elt projects :active))
-           (helm-make-source "Finished Projects" #'orgtd-project-source
-             :candidates (map-elt projects :finished))
-           (helm-make-source "Suspended Projects" #'orgtd-project-source
-             :candidates (map-elt projects :suspended))))))
+  (let* ((projects (seq-group-by #'orgtd-project-status (orgtd-projects)))
+         (sources
+          `((:name "Stuck"
+             :narrow ?s
+             :category orgtd-project
+             :state ,#'orgtd-agenda--project-state
+             :items ,(orgtd-agenda--project-candidates (map-elt projects :stuck)))
+            (:name "Active"
+             :narrow ?a
+             :category orgtd-project
+             :state ,#'orgtd-agenda--project-state
+             :items ,(orgtd-agenda--project-candidates (map-elt projects :active)))
+            (:name "Finished"
+             :narrow ?f
+             :category orgtd-project
+             :state ,#'orgtd-agenda--project-state
+             :items ,(orgtd-agenda--project-candidates (map-elt projects :finished)))
+            (:name "Suspended"
+             :narrow ?u
+             :category orgtd-project
+             :state ,#'orgtd-agenda--project-state
+             :items ,(orgtd-agenda--project-candidates (map-elt projects :suspended))))))
+    (add-hook 'embark-target-finders #'orgtd-agenda--embark-target)
+    (unwind-protect
+        (when-let* ((selected (consult--multi sources
+                                              :prompt "Project: "
+                                              :preview-key "C-j"))
+                    (marker (orgtd-agenda--get-marker (car selected))))
+          (org-goto-marker-or-bmk marker))
+      (remove-hook 'embark-target-finders #'orgtd-agenda--embark-target))))
 
 (defun orgtd-agenda--block-header-p (&optional pos)
   (save-excursion
@@ -109,8 +143,6 @@
         'org-agenda-structure)))
 
 (defun orgtd-agenda--empty-block-header-p ()
-  ;; Empty block header is followed by another block
-  ;; header (or nothing), not list of tasks.
   (let ((next-line-start (1+ (pos-eol))))
     (and (orgtd-agenda--block-header-p)
          (or (equal (point-max) next-line-start)

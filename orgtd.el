@@ -7,7 +7,7 @@
 ;; Created: 22 Oct 2015
 ;; Version: 0.4.0
 
-;; Package-Requires: ((helm))
+;; Package-Requires: ((consult) (embark))
 
 ;; This file is not part of GNU Emacs.
 
