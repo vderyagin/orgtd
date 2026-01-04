@@ -9,6 +9,8 @@
 (require 'orgtd-capture)
 (require 'subr-x)
 
+(declare-function consult-org-heading "consult-org")
+
 (defvar orgtd-capture--project-marker)
 
 (defgroup orgtd-agenda nil
@@ -47,14 +49,16 @@
                   '(orgtd-keep-projects-with-status :suspended)))))
         orgtd-agenda-all-projects-custom-command-variables))
 
-(defvar-keymap embark-orgtd-project-actions
+(defvar-keymap embark-orgtd-project-map
   :doc "Keymap for actions on orgtd projects"
   "RET" #'orgtd-agenda--project-show
-  "c" #'orgtd-agenda--project-clock-in
-  "l" #'orgtd-agenda--project-follow-link
-  "t" #'orgtd-agenda--project-capture-task)
+  "I" #'orgtd-agenda--project-clock-in
+  "o" #'orgtd-agenda--project-follow-link
+  "p" #'orgtd-agenda--project-capture-task
+  ">" #'orgtd-agenda--project-refile-here
+  "j" #'orgtd-agenda--project-goto-heading)
 
-(add-to-list 'embark-keymap-alist '(orgtd-project . embark-orgtd-project-actions))
+(add-to-list 'embark-keymap-alist '(orgtd-project . embark-orgtd-project-map))
 
 (defun orgtd-agenda--project-show (marker)
   (org-goto-marker-or-bmk marker))
@@ -74,6 +78,19 @@
                        (unwind-protect
                            (org-capture nil orgtd-capture-project-task-key)
                          (setq orgtd-capture--project-marker nil)))))
+
+(defun orgtd-agenda--project-refile-here (marker)
+  (let ((rfloc (org-with-point-at marker
+                 (list (nth 4 (org-heading-components))
+                       (buffer-file-name)
+                       nil
+                       marker))))
+    (with-current-buffer (embark--target-buffer)
+      (org-refile nil nil rfloc))))
+
+(defun orgtd-agenda--project-goto-heading (marker)
+  (with-current-buffer (marker-buffer marker)
+    (consult-org-heading)))
 
 (defun orgtd-agenda--format-project (project)
   (let* ((title (orgtd-project-title project))
