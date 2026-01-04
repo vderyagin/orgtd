@@ -7,19 +7,22 @@
   "Org-capture-related orgtd things"
   :group 'orgtd)
 
+(defvar orgtd-capture--project-marker nil)
+
 (defcustom orgtd-capture-project-task-key "p"
   "A key to select a subtask capture template"
   :group 'orgtd-capture
   :type 'string)
 
 (defun orgtd-capture-target-project-task ()
-  (org-goto-marker-or-bmk (orgtd-get-location))
-  (if-let* ((project (orgtd-get-project-at-point)))
-      (org-goto-marker-or-bmk project)
-    (user-error "Not at project")))
+  (let ((marker (or orgtd-capture--project-marker (orgtd-get-location))))
+    (org-goto-marker-or-bmk marker)
+    (unless (orgtd-get-project-at-point)
+      (user-error "Not at project"))))
 
 (defun orgtd-capture-project-p ()
-  (when-let* ((location (orgtd-get-location 'noerror)))
+  (when-let* ((location (or orgtd-capture--project-marker
+                            (orgtd-get-location 'noerror))))
     (org-with-point-at location
       (orgtd-get-project-at-point))))
 

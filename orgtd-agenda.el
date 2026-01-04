@@ -9,6 +9,8 @@
 (require 'orgtd-capture)
 (require 'subr-x)
 
+(defvar orgtd-capture--project-marker)
+
 (defgroup orgtd-agenda nil
   "Org-agenda-related orgtd things"
   :group 'orgtd)
@@ -67,7 +69,7 @@
     (call-interactively #'org-open-at-point)))
 
 (defun orgtd-agenda--project-capture-task (marker)
-  (org-with-point-at marker
+  (let ((orgtd-capture--project-marker marker))
     (org-capture nil orgtd-capture-project-task-key)))
 
 (defun orgtd-agenda--format-project (project)
