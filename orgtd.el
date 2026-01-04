@@ -167,11 +167,15 @@ Raise error if not applicable."
   (if (orgtd-at-project-p)
       (let ((todo-state (org-get-todo-state)))
         (cond
-         ((string= "HOLD" todo-state) :suspended)
-         ((member todo-state org-done-keywords) :finished)
+         ((string= "HOLD" todo-state)
+          :suspended)
+         ((member todo-state org-done-keywords)
+          :finished)
          ((or (orgtd-contains-next-p)
-              (orgtd-contains-scheduled-task-p)) :active)
-         (t :stuck)))
+              (orgtd-contains-scheduled-task-p))
+          :active)
+         (t
+          :stuck)))
     (error "Point is not at project heading at the moment")))
 
 (defclass orgtd-project ()
