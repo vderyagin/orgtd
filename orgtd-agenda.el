@@ -75,8 +75,8 @@
     :initform
     '(("Show project" . org-goto-marker-or-bmk)
       ("Show project + clock in" . (lambda (marker)
-                                    (org-with-point-at marker (org-clock-in))
-                                    (org-goto-marker-or-bmk marker)))
+                                     (org-with-point-at marker (org-clock-in))
+                                     (org-goto-marker-or-bmk marker)))
       ("Follow link under heading" . (lambda (marker)
                                        (org-with-point-at marker
                                          (beginning-of-line)

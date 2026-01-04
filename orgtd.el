@@ -185,12 +185,12 @@ Raise error if not applicable."
   ((project orgtd-project) &rest _)
   (with-slots (location last-active-at title status) project
     (setq location (point-marker)
-          last-active-at (when-let (time-string
-                                    (org-entry-get nil orgtd-project-latest-activity-property-name))
+          last-active-at (when-let* ((time-string
+                                      (org-entry-get nil orgtd-project-latest-activity-property-name)))
                            (thread-last time-string
-                             org-parse-time-string
-                             (apply #'encode-time)
-                             float-time))
+                                        org-parse-time-string
+                                        (apply #'encode-time)
+                                        float-time))
           title (org-with-point-at location
                   (org-link-display-format (nth 4 (org-heading-components))))
           status (orgtd-project-at-point-status))))
@@ -219,7 +219,7 @@ Raise error if not applicable."
 
 ;;;###autoload
 (defun orgtd-skip-over-projects ()
-  (when-let (prj (orgtd-get-project-at-point))
+  (when-let* ((prj (orgtd-get-project-at-point)))
     (org-with-point-at prj
       (org-end-of-subtree 'invisible-ok))))
 
@@ -308,7 +308,7 @@ current heading clocked out."
 
 (defun orgtd-set-project-last-active-timestamp ()
   "Set a property on project heading indicating activity. Intended for use in hooks"
-  (when-let (project (orgtd-get-project-at-point))
+  (when-let* ((project (orgtd-get-project-at-point)))
     (orgtd-bump-latest-activity-timestamp project)
     (org-entry-delete project orgtd-project-property-name)))
 
@@ -322,7 +322,7 @@ current heading clocked out."
 be invoked after change took place (from hooks or from code that
 changes stuff within project)"
   (unless (orgtd-at-project-p) ; do nothing if on project heading (avoid recursion)
-    (when-let (project-marker (orgtd-get-project-at-point))
+    (when-let* ((project-marker (orgtd-get-project-at-point)))
       (org-with-point-at project-marker
         (org-todo (if (or (orgtd-contains-next-p)
                           (eq (orgtd-project-at-point-status) :stuck)
@@ -333,7 +333,7 @@ changes stuff within project)"
 ;;;###autoload
 (defun orgtd-narrow-to-project ()
   (interactive)
-  (if-let (project-marker (orgtd-get-project-at-point))
+  (if-let* ((project-marker (orgtd-get-project-at-point)))
       (progn
         (org-goto-marker-or-bmk project-marker)
         (org-narrow-to-subtree))

@@ -14,12 +14,12 @@
 
 (defun orgtd-capture-target-project-task ()
   (org-goto-marker-or-bmk (orgtd-get-location))
-  (if-let (project (orgtd-get-project-at-point))
+  (if-let* ((project (orgtd-get-project-at-point)))
       (org-goto-marker-or-bmk project)
     (user-error "Not at project")))
 
 (defun orgtd-capture-project-p ()
-  (when-let (location (orgtd-get-location 'noerror))
+  (when-let* ((location (orgtd-get-location 'noerror)))
     (org-with-point-at location
       (orgtd-get-project-at-point))))
 
