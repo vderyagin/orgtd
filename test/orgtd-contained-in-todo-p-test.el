@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (describe "orgtd-contained-in-todo-p"
   (it "handles top-level headings"
     (with-org "* foo"

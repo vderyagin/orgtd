@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (require 'orgtd)
 (require 'cl-macs)
 

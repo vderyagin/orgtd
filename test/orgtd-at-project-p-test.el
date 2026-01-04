@@ -1,4 +1,6 @@
-(describe "orgtd-atp-roject-p"
+;;; -*- lexical-binding: t -*-
+
+(describe "orgtd-at-project-p"
   (it "rejects non-project headings"
     (with-org "* plain heading"
       (expect (orgtd-at-project-p) :to-be nil)))

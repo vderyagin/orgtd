@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (describe "orgtd-parent-project-location"
   (it "just returns `nil' when there is nothing there"
     (with-org ""

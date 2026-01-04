@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (describe "orgtd-last-clock-out-time"
   (it "returns nil if called at empty heading"
     (with-org "* some heading"

@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (describe "orgtd-contains-scheduled-task-p"
   (it "handles headings without scheduled tasks"
     (with-org "* heading"

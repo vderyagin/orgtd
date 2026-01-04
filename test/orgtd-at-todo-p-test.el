@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (describe "orgtd-at-todo-p"
   (it "handles todos"
     (with-org "* TODO foobar"

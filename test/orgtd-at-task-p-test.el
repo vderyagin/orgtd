@@ -1,3 +1,5 @@
+;;; -*- lexical-binding: t -*-
+
 (describe "orgtd-at-task-p"
   (it "handles simple todo items"
     (with-org "* TODO do a thing"
