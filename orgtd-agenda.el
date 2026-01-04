@@ -69,8 +69,11 @@
     (call-interactively #'org-open-at-point)))
 
 (defun orgtd-agenda--project-capture-task (marker)
-  (let ((orgtd-capture--project-marker marker))
-    (org-capture nil orgtd-capture-project-task-key)))
+  (setq orgtd-capture--project-marker marker)
+  (run-at-time 0 nil (lambda ()
+                       (unwind-protect
+                           (org-capture nil orgtd-capture-project-task-key)
+                         (setq orgtd-capture--project-marker nil)))))
 
 (defun orgtd-agenda--format-project (project)
   (let* ((title (orgtd-project-title project))
