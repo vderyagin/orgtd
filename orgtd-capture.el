@@ -15,7 +15,7 @@
   :type 'string)
 
 (defun orgtd-capture-target-project-task ()
-  (let ((marker (or orgtd-capture--project-marker (orgtd-get-location))))
+  (let ((marker (or orgtd-capture--project-marker (orgtd-get-project-at-point))))
     (org-goto-marker-or-bmk marker)
     (unless (orgtd-get-project-at-point)
       (user-error "Not at project"))))
