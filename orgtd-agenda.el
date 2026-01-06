@@ -5,6 +5,7 @@
 (require 'embark-consult)
 (require 'map)
 (require 'org-agenda)
+(require 'org-capture)
 (require 'org-clock)
 (require 'orgtd)
 (require 'orgtd-capture)
@@ -87,7 +88,10 @@
                        nil
                        marker))))
     (with-current-buffer (embark--target-buffer)
-      (org-refile nil nil rfloc))))
+      (org-refile nil nil rfloc)
+      (when (and org-capture-mode
+                 (buffer-base-buffer (current-buffer)))
+        (org-capture-kill)))))
 
 (defun orgtd-agenda--project-goto-heading (marker)
   (with-current-buffer (marker-buffer marker)
