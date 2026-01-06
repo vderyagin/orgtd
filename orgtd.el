@@ -7,7 +7,7 @@
 ;; Created: 22 Oct 2015
 ;; Version: 0.4.0
 
-;; Package-Requires: ((consult) (embark))
+;; Package-Requires: ((consult) (embark) (embark-consult))
 
 ;; This file is not part of GNU Emacs.
 

@@ -2,6 +2,7 @@
 
 (require 'consult)
 (require 'embark)
+(require 'embark-consult)
 (require 'map)
 (require 'org-agenda)
 (require 'org-clock)
