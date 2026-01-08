@@ -25,8 +25,8 @@
 
   (it "is not fooled by non-heading containing NEXT keyword"
     (with-org "* heading
-foo bar * NEXT baz")
-    (expect (orgtd-contains-next-p) :to-be nil))
+foo bar * NEXT baz"
+      (expect (orgtd-contains-next-p) :to-be nil)))
 
   (it "accepts other keywords if set"
     (with-org "* TODO project

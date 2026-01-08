@@ -72,4 +72,20 @@ CLOCK: [2016-01-07 Thu 11:00]--%s =>  0:31
                         timestamp-earlier timestamp-latest)
         (expect  (float-time (org-time-string-to-time timestamp-earlier))
                  :to-equal
-                 (orgtd-last-clock-out-time))))))
+                 (orgtd-last-clock-out-time)))))
+
+  (it "returns nil when called from non-heading position"
+    (with-org "<POINT>text before heading
+* heading
+:LOGBOOK:
+CLOCK: [2016-01-06 Wed 11:00]--[2016-01-06 Wed 11:31] =>  0:31
+:END:"
+      (expect (orgtd-last-clock-out-time) :to-be nil)))
+
+  (it "returns nil when called from body text"
+    (with-org "* heading
+<POINT>body text
+:LOGBOOK:
+CLOCK: [2016-01-06 Wed 11:00]--[2016-01-06 Wed 11:31] =>  0:31
+:END:"
+      (expect (orgtd-last-clock-out-time) :to-be nil))))

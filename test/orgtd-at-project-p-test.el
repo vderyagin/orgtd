@@ -47,4 +47,21 @@
     (with-org "* TODO top-level-todo
 ** TODO <POINT>second-level-todo
 *** TODO third-level todo"
+      (expect (orgtd-at-project-p) :to-be nil)))
+
+  (it "accepts DONE project"
+    (with-org "* DONE finished project
+** TODO leftover task"
+      (expect (orgtd-at-project-p) :to-be-truthy)))
+
+  (it "returns nil when point is in body text"
+    (with-org "* TODO project
+<POINT>body text
+** TODO task"
+      (expect (orgtd-at-project-p) :to-be nil)))
+
+  (it "returns nil when called outside any heading"
+    (with-org "<POINT>text before
+* TODO project
+** TODO task"
       (expect (orgtd-at-project-p) :to-be nil))))

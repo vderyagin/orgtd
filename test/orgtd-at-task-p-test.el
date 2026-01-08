@@ -30,4 +30,14 @@
 :IS_PROJECT: true
 :END:
 "
-        (expect (orgtd-at-task-p) :to-be nil)))))
+        (expect (orgtd-at-task-p) :to-be nil))))
+
+  (it "accepts tasks nested within projects"
+    (with-org "* TODO project
+** TODO <POINT>task within project"
+      (expect (orgtd-at-task-p) :to-be-truthy)))
+
+  (it "rejects point in body text"
+    (with-org "* TODO task
+<POINT>body text"
+      (expect (orgtd-at-task-p) :to-be nil))))

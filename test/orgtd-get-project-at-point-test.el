@@ -41,4 +41,20 @@
 ** b
 ** c
 *** d"
+      (expect (orgtd-get-project-at-point) :to-be nil)))
+
+  (it "finds project when called from body text within project"
+    (with-org "* TODO project
+<POINT>some body text
+** TODO task"
+      (expect (orgtd-get-project-at-point)
+              :to-equal
+              (save-excursion
+                (goto-char (point-min))
+                (point-marker)))))
+
+  (it "returns nil when called outside any heading"
+    (with-org "<POINT>text before headings
+* TODO project
+** TODO task"
       (expect (orgtd-get-project-at-point) :to-be nil))))
