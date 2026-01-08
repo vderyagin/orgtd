@@ -30,7 +30,8 @@
 
 ;;; Code:
 
-(require 'eieio)
+(eval-when-compile
+  (require 'cl-macs))
 (require 'org)
 (require 'org-clock)
 (require 'org-element)
@@ -178,30 +179,29 @@ Raise error if not applicable."
           :stuck)))
     (error "Point is not at project heading at the moment")))
 
-(defclass orgtd-project ()
-  ((location :reader orgtd-project-location)
-   (last-active-at :reader orgtd-project-last-active-at)
-   (title :reader orgtd-project-title)
-   (status :type (member :active :suspended :stuck :finished)
-           :reader orgtd-project-status)))
+(cl-defstruct (orgtd-project (:constructor orgtd-project--create))
+  location
+  last-active-at
+  title
+  status)
 
-(cl-defmethod initialize-instance :after
-  ((project orgtd-project) &rest _)
-  (with-slots (location last-active-at title status) project
-    (setq location (point-marker)
-          last-active-at (when-let* ((time-string
-                                      (org-entry-get nil orgtd-project-latest-activity-property-name)))
-                           (thread-last time-string
-                                        org-parse-time-string
-                                        (apply #'encode-time)
-                                        float-time))
-          title (org-with-point-at location
-                  (org-link-display-format (nth 4 (org-heading-components))))
-          status (orgtd-project-at-point-status))))
+(defun orgtd-project ()
+  (let ((location (point-marker)))
+    (orgtd-project--create
+     :location location
+     :last-active-at (when-let* ((time-string
+                                  (org-entry-get nil orgtd-project-latest-activity-property-name)))
+                       (thread-last time-string
+                                    org-parse-time-string
+                                    (apply #'encode-time)
+                                    float-time))
+     :title (org-with-point-at location
+              (org-link-display-format (nth 4 (org-heading-components))))
+     :status (orgtd-project-at-point-status))))
 
-(cl-defmethod orgtd-project-currently-clocked-p ((project orgtd-project))
-  "Return `t' when PROJECT is being clocked currently, `nil' otherwise."
-  (equal (oref project location)
+(defun orgtd-project-currently-clocked-p (project)
+  "Return non-nil when PROJECT is being clocked currently."
+  (equal (orgtd-project-location project)
          (when (org-clocking-p)
            (org-with-point-at org-clock-marker
              (orgtd-get-project-at-point)))))
