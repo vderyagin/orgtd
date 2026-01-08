@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
+(require 'test/test-helper)
+
 (describe "orgtd-at-todo-p"
   (it "handles todos"
     (with-org "* TODO foobar"

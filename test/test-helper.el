@@ -1,11 +1,11 @@
 ;;; -*- lexical-binding: t -*-
 
+(require 'buttercup)
 (require 'orgtd)
-(require 'cl-macs)
 
 (defmacro with-org (text &rest body)
   (declare (indent 1))
-  (let ((position (cl-gensym)))
+  (let ((position (gensym)))
     `(with-temp-buffer
        (org-mode)
        (insert ,text)
@@ -24,3 +24,5 @@
   `(let ((org-todo-keywords ,keywords))
      (org-set-regexps-and-options)
      ,@body))
+
+(provide 'test/test-helper)

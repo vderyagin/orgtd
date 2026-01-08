@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
+(require 'test/test-helper)
+
 (describe "orgtd-get-project-at-point"
   (it "bare headings are not within any project"
     (with-org "* foo"

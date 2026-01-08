@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
+(require 'test/test-helper)
+
 (describe "orgtd-at-project-p"
   (it "rejects non-project headings"
     (with-org "* plain heading"

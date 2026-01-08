@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
+(require 'test/test-helper)
+
 (describe "orgtd-last-clock-out-time"
   (it "returns nil if called at empty heading"
     (with-org "* some heading"

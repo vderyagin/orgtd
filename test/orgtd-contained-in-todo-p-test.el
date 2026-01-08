@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
+(require 'test/test-helper)
+
 (describe "orgtd-contained-in-todo-p"
   (it "handles top-level headings"
     (with-org "* foo"

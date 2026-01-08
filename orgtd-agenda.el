@@ -135,25 +135,25 @@
   (let* ((projects (seq-group-by #'orgtd-project-status (orgtd-projects)))
          (sources
           `((:name "Stuck"
-             :narrow ?s
-             :category orgtd-project
-             :state ,#'orgtd-agenda--project-state
-             :items ,(orgtd-agenda--project-candidates (map-elt projects :stuck)))
+                   :narrow ?s
+                   :category orgtd-project
+                   :state ,#'orgtd-agenda--project-state
+                   :items ,(orgtd-agenda--project-candidates (map-elt projects :stuck)))
             (:name "Active"
-             :narrow ?a
-             :category orgtd-project
-             :state ,#'orgtd-agenda--project-state
-             :items ,(orgtd-agenda--project-candidates (map-elt projects :active)))
+                   :narrow ?a
+                   :category orgtd-project
+                   :state ,#'orgtd-agenda--project-state
+                   :items ,(orgtd-agenda--project-candidates (map-elt projects :active)))
             (:name "Finished"
-             :narrow ?f
-             :category orgtd-project
-             :state ,#'orgtd-agenda--project-state
-             :items ,(orgtd-agenda--project-candidates (map-elt projects :finished)))
+                   :narrow ?f
+                   :category orgtd-project
+                   :state ,#'orgtd-agenda--project-state
+                   :items ,(orgtd-agenda--project-candidates (map-elt projects :finished)))
             (:name "Suspended"
-             :narrow ?u
-             :category orgtd-project
-             :state ,#'orgtd-agenda--project-state
-             :items ,(orgtd-agenda--project-candidates (map-elt projects :suspended))))))
+                   :narrow ?u
+                   :category orgtd-project
+                   :state ,#'orgtd-agenda--project-state
+                   :items ,(orgtd-agenda--project-candidates (map-elt projects :suspended))))))
     (add-hook 'embark-target-finders #'orgtd-agenda--embark-target)
     (unwind-protect
         (when-let* ((selected (consult--multi sources

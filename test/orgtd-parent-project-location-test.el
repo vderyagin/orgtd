@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
+(require 'test/test-helper)
+
 (describe "orgtd-parent-project-location"
   (it "just returns `nil' when there is nothing there"
     (with-org ""

@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
+(require 'test/test-helper)
+
 (describe "orgtd-at-task-p"
   (it "handles simple todo items"
     (with-org "* TODO do a thing"

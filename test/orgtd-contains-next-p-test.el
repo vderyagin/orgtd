@@ -1,5 +1,7 @@
 ;;; -*- lexical-binding: t -*-
 
+(require 'test/test-helper)
+
 (describe "orgtd-contains-next-p"
   (it "rejects headings without todo keywords"
     (with-org "* plain heading"
