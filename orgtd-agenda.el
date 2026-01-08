@@ -187,6 +187,7 @@
                else do (forward-line))
     (message "Can only remove compact block headers")))
 
+;;;###autoload
 (defun orgtd-agenda-setup ()
   (add-hook 'org-agenda-finalize-hook #'orgtd-agenda-remove-empty-block-headers)
   (org-add-agenda-custom-command orgtd-agenda-custom-command-all-projects))

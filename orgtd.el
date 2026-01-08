@@ -363,6 +363,9 @@ changes stuff within project)"
     (org-todo "TODO"))
   (orgtd-bump-latest-activity-timestamp (orgtd-get-location)))
 
+(declare-function orgtd-capture-setup "orgtd-capture")
+(declare-function orgtd-agenda-setup "orgtd-agenda")
+
 (autoload #'orgtd-capture-setup "orgtd-capture")
 (autoload #'orgtd-agenda-setup "orgtd-agenda")
 
